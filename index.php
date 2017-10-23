@@ -39,11 +39,14 @@
                      $response="CON Chaguo sio sahihi\n";
                 break;
             }
-          
              
         }
-        else if(isset($level[1]) && $level[1]!="" && $level[0]=="1" && !isset($level[2])){
+        else if(isset($level[1]) && $level[1]!="" && $level[0]=="1" && $level[1]=="1" && !isset($level[2])){
             $response=getDrainStatus($user);
+            
+        }
+        else if(isset($level[1]) && $level[1]!="" && $level[0]=="1" && $level[1]=="2" && !isset($level[2])){
+            $response=getCollaborators($user);
             
         }
         else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && !isset($level[2])){

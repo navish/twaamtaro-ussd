@@ -43,7 +43,7 @@
              
         }
         else if(isset($level[1]) && $level[1]!="" && $level[0]=="1" && !isset($level[2])){
-            $response=getInfo();
+            $response=getDrainStatus($user);
             
         }
         else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && !isset($level[2])){

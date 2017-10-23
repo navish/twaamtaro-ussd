@@ -52,6 +52,7 @@
 
     function getDrainStatus($userId)
     {
+        $dbcon = db();
         $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
 
             if(pg_num_rows($sqlClaims) > 0) {
@@ -59,23 +60,20 @@
 
                 $mitaro =$claimsInfo['gid'];
                 $statusvalue =$claimsInfo['shoveled'];
-                if ($statusvalue =true) {
+
+                if ($statusvalue === t) {
                     $drainstatus ='Mtaro wako ni msafi';
                 }
-                elseif ($statusvalue = false)  {
+                elseif ($statusvalue === f)  {
                     $drainstatus ='Mtaro wako ni mchafu';
                 }
-                elseif ($statusvalue = null)  {
+                elseif ($statusvalue === null)  {
                     $drainstatus ='Hakuna taarifa yoyote inayohusu mtaro wako';
                 } 
-
-            } else {
-              $drainstatus ="No Claims";
-              
-            }
-            return $drainstatus;
+                return $drainstatus;
+            } 
+            
     }
-   
 
     function switchLang()
     {

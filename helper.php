@@ -1,4 +1,5 @@
 <?php
+   
     //------------------------------------------------------------------------------
     //-------------------------------BEGIN MENUS-----------------------------------//
     //------------------------------------------------------------------------------
@@ -30,7 +31,6 @@
         switch ($info) {
             //Citizen has cleaned their drain
             case 1:
-            var_dump($dbcon);
                 $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId");
                 if ($sendClean) {
                     echo "Umefanikiwa kutuma taarifa";

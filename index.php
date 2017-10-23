@@ -1,17 +1,18 @@
 <?php
-
+        include 'dbcon.php';
         include 'helper.php';
-
+        
 
         $res=$_GET['USSD_STRING']; //User response 
         $phonenumber=$_GET['MSISDN']; //Assumed mobile number
         $serviceCode=$_GET['serviceCode'];
         //$sessionId=$_GET['sessionId']; //For any audits/checks
 
-        include 'dbcon.php';         
+                
 
         $level = explode("*", $res);
         if (isset($res)) {
+            $dbcon = db(); 
         $number =$phonenumber;
         $citizen = pg_query($dbcon,"SELECT * FROM users WHERE sms_number='$number'");
 

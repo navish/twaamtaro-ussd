@@ -8,14 +8,12 @@
         $serviceCode=$_GET['serviceCode'];
         //$sessionId=$_GET['sessionId']; //For any audits/checks
 
-                
+        $dbcon = db(); 
 
         $level = explode("*", $res);
         if (isset($res)) {
-            $dbcon = db(); 
         $number =$phonenumber;
         $citizen = pg_query($dbcon,"SELECT * FROM users WHERE sms_number='$number'");
-
         if (pg_num_rows($citizen) > 0) {
             $user_row=pg_fetch_assoc($citizen);
             $user = $user_row['id'];

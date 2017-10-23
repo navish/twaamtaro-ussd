@@ -28,6 +28,7 @@
     //------------------------------------------------------------------------------
 
     function sendInfo($info,$userId) {
+        $dbcon = db(); 
         switch ($info) {
             //Citizen has cleaned their drain
             case 1:

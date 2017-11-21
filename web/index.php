@@ -42,7 +42,7 @@ $app->post('/', function() use($app) {
         if ( $res == "" ) {
             $response = dWelcomeMenu($mhusika); 
         }
-        if(isset($level[0]) && $level[0]! = "" && !isset($level[1])){
+        if(isset($level[0]) && $level[0]!= "" && !isset($level[1])){
             switch ($level[0]) {
                 case 1:
                    $response = dGetInfoMenu();
@@ -64,7 +64,7 @@ $app->post('/', function() use($app) {
             }
              
         }
-        else if(isset($level[1]) && $level[1]! = "" && $level[0]=="1"  && !isset($level[2])){
+        else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[2])){
             switch ($level[1]) {
                 case 1:
                    $response = getDrainStatus($user);
@@ -78,7 +78,7 @@ $app->post('/', function() use($app) {
             }   
             
         }
-        else if(isset($level[1]) && $level[1]! = "" && $level[0]=="2" && !isset($level[2])){
+        else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && !isset($level[2])){
             $response = sendInfo($level[1],$user);
         }
         

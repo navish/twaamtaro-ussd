@@ -64,7 +64,7 @@ $app->post('/', function() use($app) {
 
     $app['monolog']->addDebug('logging output.');
 
-    return $response;
+    return "CON What would you want to check \n";
 // DONE!!!
 
 });

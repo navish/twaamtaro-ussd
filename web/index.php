@@ -58,7 +58,7 @@ else if ( $text == "1" ) {
 }
 // Print the response onto the page so that our gateway can read it
 header('Content-type: text/plain');
-echo $response;
+return $response;
 // DONE!!!
 
 });

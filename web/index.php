@@ -58,8 +58,13 @@ $app->post('/', function() use($app) {
     }
     // Print the response onto the page so that our gateway can read it
     header('Content-type: text/plain');
+    $response_http = new Response();
+    $response_http->headers->set('Content-Type', 'text/plain');
+    $response_http->sendHeaders();
+
     $app['monolog']->addDebug('logging output.');
-    return $app['twig']->render('index.twig');
+
+    return $response;
 // DONE!!!
 
 });

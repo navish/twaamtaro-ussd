@@ -1,8 +1,7 @@
 <?php
 
 require('../vendor/autoload.php');
-require('./dbcon.php');
-require('./helper.php');
+
 
 $app = new Silex\Application();
 $app['debug'] = true;
@@ -20,7 +19,8 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 // Our web handlers
 
 $app->post('/', function() use($app) {
-     
+    include 'dbcon.php';
+    include 'helper.php';
     $res         = $_POST["text"]; //User response 
     $phonenumber = $_POST["phoneNumber"]; //Assumed mobile number
     $serviceCode = $_POST["serviceCode"];

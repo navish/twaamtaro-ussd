@@ -1,8 +1,8 @@
 <?php
 
 require('../vendor/autoload.php');
-include 'dbcon.php';
-include 'helper.php';
+require('dbcon.php');
+require('helper.php');
 
 $app = new Silex\Application();
 $app['debug'] = true;

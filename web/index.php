@@ -19,7 +19,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 // Our web handlers
 
 $app->post('/', function() use($app) {
-    require __DIR__.'/helpers.php';
+    require __DIR__.'/helper.php';
     require __DIR__.'/dbcon.php';
 
     $res         = $_POST["text"]; //User response 

@@ -31,10 +31,12 @@ $app->post('/', function() use($app) {
     $level = explode("*", $res);
     if (isset($res)) {
       if (strpos($phonenumber, '+') !== false) {
-          $number = str_replace("+","",$phonenumber);
+          $phonenumber = str_replace("+","",$phonenumber);
+          echo 'inside'
       }
+      echo $phonenumber;
 
-      $citizen = pg_query($dbcon, "SELECT * FROM users WHERE sms_number='$number'");
+      $citizen = pg_query($dbcon, "SELECT * FROM users WHERE sms_number='$phonenumber'");
 
     if (pg_num_rows($citizen) > 0) {
         $user_row = pg_fetch_assoc($citizen);

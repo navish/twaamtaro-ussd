@@ -5,12 +5,10 @@
     //------------------------------------------------------------------------------
     function dWelcomeMenu($user) {
         $menulist ="
-        <ol>
-        <li>Pata Taarifa</li>
-        <li>Tuma Taarifa</li>
-        <li>Omba Msaada</li>        
-        <li>Badili Lugha</li>
-        </ol>";
+        1.Pata Taarifa
+        2.Tuma Taarifa
+        3.Omba Msaada        
+        4.Badili Lugha";
         $welcomemenu =" CON ".$user." Karibu Twaa Mtaro. \nChagua Huduma ".$menulist;
         return $welcomemenu;
     }

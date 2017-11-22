@@ -31,8 +31,13 @@ $app->post('/', function() use($app) {
         $dbcon = db(); 
         $level = explode("*", $res);
         if (isset($res)) {
-        $number =$phonenumber;
+        $number =  $phonenumber;
+        echo $phonenumber;
         $citizen = pg_query($dbcon, "SELECT * FROM users WHERE sms_number='$number'");
+
+        if($citizen){
+          echo 'No found user';
+        }
 
         if (pg_num_rows($citizen) > 0) {
             $user_row = pg_fetch_assoc($citizen);
@@ -91,7 +96,11 @@ $app->post('/', function() use($app) {
         }
         
         }//If citizen is registered
-        else { $response = "Namba yako, ".$number." haijasajiliwa na Twaa Mtaro. Wasiliana na kiongozi wako wa mtaa kwa msaada zaidi "; }
+
+        else { 
+
+          $response = "CON Namba yako, ".$number." haijasajiliwa na Twaa Mtaro. Wasiliana na kiongozi wako wa mtaa kwa msaada zaidi "; 
+      }
         header('Content-type: res/plain');
         return $response;
         }//If USSD String is set

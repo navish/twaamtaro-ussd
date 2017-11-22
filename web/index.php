@@ -31,7 +31,7 @@ $app->post('/', function() use($app) {
     $level = explode("*", $res);
     if (isset($res)) {
       if (strpos($phonenumber, '+') !== false) {
-          $phonenumber = str_replace("+","",$phonenumber);
+          $phonenumber = str_replace('+','',$phonenumber);
           echo 'inside';
       }
       echo $phonenumber;
@@ -98,7 +98,7 @@ $app->post('/', function() use($app) {
 
     else { 
 
-      $response = "END Namba yako, ".$number." haijasajiliwa na Twaa Mtaro. Wasiliana na kiongozi wako wa mtaa kwa msaada zaidi "; 
+      $response = "END Namba yako, ".$phonenumber." haijasajiliwa na Twaa Mtaro. Wasiliana na kiongozi wako wa mtaa kwa msaada zaidi "; 
   }
     header('Content-type: res/plain');
     return $response;

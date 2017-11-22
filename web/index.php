@@ -32,9 +32,7 @@ $app->post('/', function() use($app) {
     if (isset($res)) {
       if (strpos($phonenumber, '+') !== false) {
           $phonenumber = str_replace('+','',$phonenumber);
-          echo 'inside';
       }
-      echo $phonenumber;
 
       $citizen = pg_query($dbcon, "SELECT * FROM users WHERE sms_number='$phonenumber'");
 

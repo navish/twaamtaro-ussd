@@ -32,7 +32,7 @@ $app->post('/', function() use($app) {
     if (isset($res)) {
       if (strpos($phonenumber, '+') !== false) {
           $phonenumber = str_replace("+","",$phonenumber);
-          echo 'inside'
+          echo 'inside';
       }
       echo $phonenumber;
 

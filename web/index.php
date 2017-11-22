@@ -36,7 +36,7 @@ $app->post('/', function() use($app) {
         $citizen = pg_query($dbcon, "SELECT * FROM users WHERE sms_number='$number'");
 
         if($citizen){
-          echo 'No found user';
+          echo 'No found user'.$phonenumber.' '.$number;
         }
 
         if (pg_num_rows($citizen) > 0) {

@@ -30,10 +30,10 @@ $app->post('/', function() use($app) {
     $dbcon = db(); 
     $level = explode("*", $res);
     if (isset($res)) {
-      if (strpos($number, '+') !== false) {
+      if (strpos($phonenumber, '+') !== false) {
           $number = str_replace("+","",$phonenumber);
       }
-      
+
       $citizen = pg_query($dbcon, "SELECT * FROM users WHERE sms_number='$number'");
 
     if (pg_num_rows($citizen) > 0) {

@@ -90,7 +90,7 @@
             //                    Wasiliana na kiongozi wako wa mtaa\n
             //                    kwa maelezo zaidi";
             // }
-            return "inside function".$sqlClaims ;
+            return "inside function";
     }
 
     function getCollaborators($userId)

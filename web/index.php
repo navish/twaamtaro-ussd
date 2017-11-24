@@ -72,10 +72,6 @@ $app->post('/', function() use($app) {
         switch ($level[1]) {
             case 1:
                $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
-        
-                header('Content-type: res/plain');
-                return 'CON test'.$sqlClaims;    
-
                $response = getDrainStatus($sqlClaims);
             break;
             case 2:

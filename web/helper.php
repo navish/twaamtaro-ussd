@@ -88,7 +88,7 @@
                 
             }
             else{
-                    $drainstatus = "Tatizo kubwa kweli kweli, pole';
+                    $drainstatus = "Tatizo kubwa kweli kweli, pole";
                 }
             return $drainstatus;
     }

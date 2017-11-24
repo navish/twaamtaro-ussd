@@ -68,8 +68,8 @@
 
     function getDrainStatus($userId)
     {
-        $dbcon = db();
-        $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
+        // $dbcon = db();
+        // $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
         $drainstatus = "";
             if(false) {
             $claimsInfo = pg_fetch_assoc($sqlClaims);

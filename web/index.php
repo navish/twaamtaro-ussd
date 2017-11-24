@@ -70,7 +70,7 @@ $app->post('/', function() use($app) {
     else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[2])){
         switch ($level[1]) {
             case 1:
-               $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id=$userId");
+               $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id=$user");
                $response = getDrainStatus($sqlClaims);
             break;
             case 2:

@@ -72,14 +72,12 @@ $app->post('/', function() use($app) {
         switch ($level[1]) {
             case 1:
                 $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
-                error_log('sql claims'.$sqlClaims.'  '.pg_num_rows($sqlClaims).'assoc '.pg_fetch_assoc($sqlClaims)['shoveled']);
+                
                 if(pg_num_rows($sqlClaims) > 0) {
                   
                   $claimsInfo = pg_fetch_assoc($sqlClaims);
                   $response = getDrainStatus($claimsInfo);
-                  error_log('END '.$response);
-                  header('Content-type: res/plain');
-                  return 'END '.$response;
+                  
                 } else{
                   $response = "Haujatwaa mtaro wowote,\n
                                Wasiliana na kiongozi wako wa mtaa\n

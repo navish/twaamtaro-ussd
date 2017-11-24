@@ -82,11 +82,10 @@
                 }
                 elseif ($statusvalue == null)  {
                     $drainstatus = 'Hakuna taarifa yoyote inayohusu mtaro wako';
-                }
-                
+                }                
             }
             else{
-                    $drainstatus = "Tatizo kubwa kweli kweli, pole";
+                    $drainstatus = "Tatizo limetokea, tafadhali jaribu tena baadae.";
                 }
             return $drainstatus;
     }

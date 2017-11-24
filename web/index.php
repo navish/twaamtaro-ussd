@@ -72,7 +72,7 @@ $app->post('/', function() use($app) {
         switch ($level[1]) {
             case 1:
                 $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
-                error_log('sql claims'.$sqlClaims.'  '.pg_num_rows($sqlClaims));
+                error_log('sql claims'.$sqlClaims.'  '.pg_num_rows($sqlClaims).'assoc '.pg_fetch_assoc($sqlClaims));
                 if(pg_num_rows($sqlClaims) > 0) {
                   header('Content-type: res/plain');
                   return 'inside if ';

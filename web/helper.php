@@ -48,12 +48,20 @@
         switch ($info) {
             //Citizen has cleaned their drain
             case 1:
-                $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId");
-                if ($sendClean) {
-                    return "END Umefanikiwa kutuma taarifa";
-                } else {
-                    return "END Haujafanikiwa kutuma taarifa";
+                $sqlClaim = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
+                
+                if(pg_num_rows($sqlClaims) > 0) {
+                    $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId");
+                    if ($sendClean) {
+                        return "END Umefanikiwa kutuma taarifa";
+                    } else {
+                        return "END Haujafanikiwa kutuma taarifa";
+                    }
                 }
+                else
+                    {
+                        return "END Taarifa yako haijatumwa. Hauna mtaro wowote.";
+                    }
             break;
 
             //Citizen reporting rubbish collection
@@ -71,15 +79,16 @@
     {
         $dbcon = db();
         $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
+
             if(pg_num_rows($sqlClaims) > 0) {
             $claimsInfo=pg_fetch_assoc($sqlClaims);
                 $mitaro =$claimsInfo['gid'];
                 $statusvalue =$claimsInfo['shoveled'];
 
-                if ($statusvalue === t) {
+                if ($statusvalue = true) {
                     $drainstatus ='Mtaro wako ni msafi';
                 }
-                elseif ($statusvalue === false)  {
+                elseif ($statusvalue = false)  {
                     $drainstatus = 'Mtaro wako ni mchafu';
                 }
                 elseif ($statusvalue === null)  {
@@ -107,12 +116,12 @@
             $sqlCollaborator = pg_query($dbcon,"SELECT * FROM drain_claims WHERE gid=$drain AND user_id != $userId");
             //Check if there is any collaborator
               if(pg_num_rows($sqlCollaborator) > 0) {
-                $collaborators = 'Washirika wako ni: <br>';
+                $collaborators = 'Washirika wako ni: ';
 
                 //Get collaborators' names from users table
                 while ($collaboratorInfo=pg_fetch_assoc($sqlCollaborator)) {
                     $user =$collaboratorInfo['user_id'];
-                    $collaborators .= getUser($user).'<br>';
+                    $collaborators .= getUser($user).'  ';
                     
                 }
               } //End getting collaborators details
@@ -143,10 +152,9 @@
         return "CON Chagua aina ya msaada ". $categoriesMenu;
     }
     
-    function askForHelp($res,$user)
-    {   
-        $dbcon = db();
-        
+    function askForHelp($res, $user)
+    {      
+        $dbcon = db();    
         $helpText = "";
         $helpDetails = explode("*", $res);
 

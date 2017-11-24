@@ -66,9 +66,9 @@
         } // End Switch 
     } //End sendInfo()
 
-    function getDrainStatus($dbcon, $userId)
+    function getDrainStatus($sqlClaims)
     {
-        $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id=$userId");
+       
             // if(pg_num_rows($sqlClaims) > 0) {
             // $claimsInfo = pg_fetch_assoc($sqlClaims);
             //     $mitaro = $claimsInfo['gid'];

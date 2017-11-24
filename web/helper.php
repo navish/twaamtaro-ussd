@@ -74,15 +74,17 @@
 
                 $statusvalue = $claimsInfo['shoveled'];
 
-                if ($statusvalue === t) {
+                if ($statusvalue === true) {
                     $drainstatus = 'Mtaro wako ni msafi';
                 }
-                elseif ($statusvalue === f)  {
+                elseif ($statusvalue === false)  {
                     $drainstatus = 'Mtaro wako ni mchafu';
                 }
-                elseif ($statusvalue === null)  {
+                elseif ($statusvalue == null)  {
                     $drainstatus = 'Hakuna taarifa yoyote inayohusu mtaro wako';
-                } 
+                } else{
+                    $drainstatus = 'Hakuna taarifa yoyote inayohusu mtaro wako';
+                }
                 
             }
             return $drainstatus;

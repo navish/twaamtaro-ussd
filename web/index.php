@@ -41,12 +41,7 @@ $app->post('/', function() use($app) {
         $user_row = pg_fetch_assoc($citizen);
         $user = $user_row['id'];
         $mhusika = $user_row['first_name'].' '.$user_row['last_name'];
-        $role = $user_row['role'];     
-
-        $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
-        
-        header('Content-type: res/plain');
-        return 'CON test'.$sqlClaims;       
+        $role = $user_row['role'];        
 
     if ( $res == "" ) {
         $response = dWelcomeMenu($mhusika); 
@@ -76,7 +71,10 @@ $app->post('/', function() use($app) {
     else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[2])){
         switch ($level[1]) {
             case 1:
-               
+               $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
+        
+                header('Content-type: res/plain');
+                return 'CON test'.$sqlClaims;    
 
                $response = getDrainStatus($sqlClaims);
             break;

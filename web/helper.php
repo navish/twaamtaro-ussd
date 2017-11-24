@@ -71,7 +71,7 @@
         $dbcon = db();
         $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
         $drainstatus = "";
-            if(pg_num_rows($sqlClaims) > 0) {
+            if(false) {
             $claimsInfo = pg_fetch_assoc($sqlClaims);
                 $mitaro = $claimsInfo['gid'];
 

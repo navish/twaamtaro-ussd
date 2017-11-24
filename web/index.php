@@ -70,8 +70,7 @@ $app->post('/', function() use($app) {
     else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[2])){
         switch ($level[1]) {
             case 1:
-               $response = getDrainStatus($user);
-               // $response = "END Problem";
+               $response = getDrainStatus($dbcon, $user);
             break;
             case 2:
                 $response = getCollaborators($user);

@@ -70,7 +70,6 @@ $app->post('/', function() use($app) {
          
     }
     else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[2])){
-        error_log("secon level if");
         switch ($level[1]) {
             case 1:
                 $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
@@ -97,14 +96,11 @@ $app->post('/', function() use($app) {
         
     }
     else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && !isset($level[2])){
-        error_log("third level if");
         $response = sendInfo($level[1],$user);
     }
     
     else if(isset($level[2]) && $level[2]!="" && !isset($level[3])){
         //Save data to database
-         error_log("Fourth level");
-         echo("There is nothing here");
         
         $response = "END Asante kwa kutumia huduma yetu";
     }

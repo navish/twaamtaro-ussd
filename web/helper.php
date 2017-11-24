@@ -87,6 +87,9 @@
                 }
                 
             }
+            else{
+                    $drainstatus = "Tatizo kubwa kweli kweli, pole';
+                }
             return $drainstatus;
     }
 

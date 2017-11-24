@@ -78,7 +78,7 @@ $app->post('/', function() use($app) {
                   $claimsInfo = pg_fetch_assoc($sqlClaims);
                   $response = getDrainStatus($claimsInfo);
                   header('Content-type: res/plain');
-                  return 'END inside if';
+                  return 'END'.$response;
                 } else{
                   $response = "Haujatwaa mtaro wowote,\n
                                Wasiliana na kiongozi wako wa mtaa\n

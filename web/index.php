@@ -56,8 +56,7 @@ $app->post('/', function() use($app) {
                 $response = dSendInfoMenu();
             break;
             case 3:
-                $response = askForHelp($user);
-                
+                $response = askForHelp($res,$user);
             break;
             case 4:
                 $response = switchLang();

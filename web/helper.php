@@ -35,7 +35,7 @@
             $citizen = $user_row['first_name'].' '.$user_row['last_name'];            
         }
         else {
-            $citizen = "There is no user with that id";
+            $citizen = "Hakuna mwananchi mwenye id hii";
         } 
         return $citizen;
     }
@@ -46,21 +46,23 @@
             case 1:
                 $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId");
                 if ($sendClean) {
-                    echo "Umefanikiwa kutuma taarifa";
+                    return "END Umefanikiwa kutuma taarifa";
                 } else {
-                    echo "Haujafanikiwa kutuma taarifa";
+                    return "END Haujafanikiwa kutuma taarifa";
                 }
             break;
+
             //Citizen reporting rubbish collection
             case 2:
-                    echo "Huduma hii haipo kwa sasa.";
+                return "END Huduma hii haipo kwa sasa.";
             break;
             
             default:
-                echo "Haujafanya chaguo sahihi";
+                return "END Haujafanya chaguo sahihi";
             break;
         } // End Switch 
     } //End sendInfo()
+
     function getDrainStatus($userId)
     {
         $dbcon = db();
@@ -69,6 +71,7 @@
             $claimsInfo=pg_fetch_assoc($sqlClaims);
                 $mitaro =$claimsInfo['gid'];
                 $statusvalue =$claimsInfo['shoveled'];
+
                 if ($statusvalue === t) {
                     $drainstatus ='Mtaro wako ni msafi';
                 }
@@ -78,25 +81,30 @@
                 elseif ($statusvalue === null)  {
                     $drainstatus ='Hakuna taarifa yoyote inayohusu mtaro wako';
                 } 
-                return $drainstatus;
-            } 
-            
-    }
+            }   
+            else
+            {
+                $drainstatus ='Haujatwaa mtaro wowote, 
+                            wasiliana na kiongozi wako wa mtaa kwa msaada zaidi.';
+            }
+        return "END ".$drainstatus;
+    } //End Get Drain Status
+
     function getCollaborators($userId)
     {   
         $dbcon = db();
-        $collaborators = 'Washirika wako ni: <br>';
-        //Search DB for any claimed drains
-        $sqlClaim = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
         //Check if the user has any claimed drains
+        $sqlClaim = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
+        
         if(pg_num_rows($sqlClaim) > 0) {
             $claimInfo=pg_fetch_assoc($sqlClaim);
             $drain =$claimInfo['gid'];
-            
+
             $sqlCollaborator = pg_query($dbcon,"SELECT * FROM drain_claims WHERE gid=$drain AND user_id != $userId");
             //Check if there is any collaborator
               if(pg_num_rows($sqlCollaborator) > 0) {
-                
+                $collaborators = 'Washirika wako ni: <br>';
+
                 //Get collaborators' names from users table
                 while ($collaboratorInfo=pg_fetch_assoc($sqlCollaborator)) {
                     $user =$collaboratorInfo['user_id'];
@@ -107,11 +115,16 @@
               else {
                     $collaborators = 'Hauna washirika wowote kwenye mtaro wako';
                 }
-            //End checking for collaborators
-            }    
-        return $collaborators;
-    }
-    function getHelpCategories()
+            } 
+            else
+            {
+                $collaborators ='Hauna washirika wowote sababu haujatwaa mtaro wowote,
+                            wasiliana na kiongozi wako wa mtaa kwa msaada zaidi.';
+            } 
+        return "END ".$collaborators;
+    } //End getting collaborators
+
+    function getHelpCategories() //Gets Help Categories from the DB
     {
         $dbcon = db();
         $categoriesMenu = '';
@@ -123,35 +136,50 @@
                      
             }
         $categoriesMenu.='</ol>';
-        echo $categoriesMenu;
+        return "CON Chagua aina ya msaada ". $categoriesMenu;
     }
-    function getHelpDetails($helpDetails,$user)
+    
+    function askForHelp($res,$user)
     {   
+        $dbcon = db();
+        
+        $helpText = "";
         $helpDetails = explode("*", $res);
-        echo "OMBA MSAADA <br>";
-        if(count($helpDetails)==1){
-            echo "CON Ingiza namba ya mtaro";
+
+        if(count($helpDetails)==1) {
+            //Enter Drain Id
+            $helpText .= "CON OMBA MSAADA
+                        Ingiza namba ya mtaro";
+            return $helpText;
         }
-        else if(count($helpDetails)==2){
-            echo "CON Chagua aina ya msaada";
-            getHelpCategories();
+        else if(count($helpDetails)==2) {
+            //Enter HelpCategory
+            $helpText .= getHelpCategories();
+            return $helpText;
         }
         else if(count($helpDetails) == 3){
-            echo "CON Ongeza maelezo (Sio lazima)";
+            $helpText .="CON Ongeza maelezo (Sio lazima)";
+            return $helpText;
         }
-        else if(count($helpDetails) == 4){
-            $user = $helpDetails[4];
+        else if(count($helpDetails) == 4) {
+
             $drainId = $helpDetails[1];
             $helpCategory = $helpDetails[2];
             $helpNeeded = $helpDetails[3]; 
-    
-            echo "Asante  ".$helpDetails[4];
+
+            //Send Help Details to the DB
+            $sqlHelp = pg_query($dbcon, 
+                "INSERT INTO need_helps( help_needed, gid, user_id, need_help_category_id, 
+                created_at, updated_at) 
+                VALUES ( '$helpNeeded', $drainId , $user, $helpCategory, now(), now())");
+
+            if ($sqlHelp) {
+                return "END Umefanikiwa kuomba msaada kwa ajili ya mtaro namba ".$drainId;
+            } else {
+                return "END Kuna tatizo limetokea, maombi yako ya msaada hayajatumwa";
+            }
         }
-    }
-    function askForHelp($user)
-    {
-        getHelpDetails($helpDetails,$user);
-        $sqlHelp = pg_query($dbcon,"INSERT INTO need_helps(id, help_needed, gid, user_id, need_help_category_id, created_at, updated_at) VALUES ('', '$helpNeeded', '$helpCategory', '$userId', now(), now())");
+
     }
     function switchLang()
     {

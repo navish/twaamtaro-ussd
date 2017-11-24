@@ -85,14 +85,11 @@ $app->post('/', function() use($app) {
         $response = sendInfo($level[1],$user);
     }
     
-    else if(isset($level[2]) && $level[2]!="" && !isset($level[3])){
-        //Save data to database
-     echo("There is nothing here");
-        
-        $response = "END Asante kwa kutumia huduma yetu";
-    }
-    
-    }//If citizen is registered
+    else if(isset($level[1]) && $level[1]!="" && $level[0]=="3"){
+        $response = askForHelp($res, $user);
+        }//End Need Help
+
+    }//End If citizen is registered
 
     else { 
 
@@ -100,10 +97,10 @@ $app->post('/', function() use($app) {
   }
     header('Content-type: res/plain');
     return $response;
-    }//If USSD String is set
+}//If USSD String is set
 
 header('Content-type: text/plain');
-return $response;
+return "END ".$response;
 // DONE!!!
 
 });

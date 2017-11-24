@@ -74,6 +74,8 @@ $app->post('/', function() use($app) {
                 $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
 
                 if(pg_num_rows($sqlClaims) > 0) {
+                  header('Content-type: res/plain');
+                  return 'inside if ';
                   $claimsInfo = pg_fetch_assoc($sqlClaims);
                   $response = getDrainStatus($claimsInfo);
                 } else{

@@ -68,31 +68,29 @@
 
     function getDrainStatus($dbcon, $userId)
     {
-        // $dbcon = db();
-        $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
-        $drainstatus = "";
-            // if(false) {
-            // $claimsInfo = pg_fetch_assoc($sqlClaims);
-            //     $mitaro = $claimsInfo['gid'];
+        $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id=$userId");
+            if(pg_num_rows($sqlClaims) > 0) {
+            $claimsInfo = pg_fetch_assoc($sqlClaims);
+                $mitaro = $claimsInfo['gid'];
 
-            //     $statusvalue = $claimsInfo['shoveled'];
+                $statusvalue = $claimsInfo['shoveled'];
 
-            //     if ($statusvalue === t) {
-            //         $drainstatus = 'Mtaro wako ni msafi';
-            //     }
-            //     elseif ($statusvalue === f)  {
-            //         $drainstatus = 'Mtaro wako ni mchafu';
-            //     }
-            //     elseif ($statusvalue === null)  {
-            //         $drainstatus = 'Hakuna taarifa yoyote inayohusu mtaro wako';
-            //     } 
+                if ($statusvalue === t) {
+                    $drainstatus = 'Mtaro wako ni msafi';
+                }
+                elseif ($statusvalue === f)  {
+                    $drainstatus = 'Mtaro wako ni mchafu';
+                }
+                elseif ($statusvalue === null)  {
+                    $drainstatus = 'Hakuna taarifa yoyote inayohusu mtaro wako';
+                } 
                 
-            // }else{
-            //     $drainstatus = "Haujatwaa mtaro wowote,
-            //                    Wasiliana na kiongozi wako wa mtaa
-            //                    kwa maelezo zaidi";
-            // }
-            return "END Inside function";
+            }else{
+                $drainstatus = "Haujatwaa mtaro wowote,\n
+                               Wasiliana na kiongozi wako wa mtaa\n
+                               kwa maelezo zaidi";
+            }
+            return $drainstatus;
     }
 
     function getCollaborators($userId)

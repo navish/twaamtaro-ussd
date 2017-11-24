@@ -75,7 +75,7 @@ $app->post('/', function() use($app) {
                 error_log('sql claims'.$sqlClaims.'  '.pg_num_rows($sqlClaims).'assoc '.pg_fetch_assoc($sqlClaims)['shoveled']);
                 if(pg_num_rows($sqlClaims) > 0) {
                   header('Content-type: res/plain');
-                  return 'inside if ';
+                  return 'END inside if';
                   $claimsInfo = pg_fetch_assoc($sqlClaims);
                   $response = getDrainStatus($claimsInfo);
                 } else{

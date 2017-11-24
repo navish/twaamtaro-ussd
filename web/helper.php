@@ -69,7 +69,7 @@
     function getDrainStatus($claimsInfo)
     {
             $drainstatus = "";
-            if($claimsInfo){
+            if(isset($claimsInfo)){
                 $mitaro = $claimsInfo['gid'];
 
                 $statusvalue = $claimsInfo['shoveled'];
@@ -81,8 +81,6 @@
                     $drainstatus = 'Mtaro wako ni mchafu';
                 }
                 elseif ($statusvalue == null)  {
-                    $drainstatus = 'Hakuna taarifa yoyote inayohusu mtaro wako';
-                } else{
                     $drainstatus = 'Hakuna taarifa yoyote inayohusu mtaro wako';
                 }
                 

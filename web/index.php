@@ -71,8 +71,16 @@ $app->post('/', function() use($app) {
     else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[2])){
         switch ($level[1]) {
             case 1:
-               $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
-               $response = getDrainStatus($sqlClaims);
+                $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
+
+                if(pg_num_rows($sqlClaims) > 0) {
+                  $claimsInfo = pg_fetch_assoc($sqlClaims);
+                  $response = getDrainStatus($claimsInfo);
+                } else{
+                  $response = "Haujatwaa mtaro wowote,\n
+                               Wasiliana na kiongozi wako wa mtaa\n
+                               kwa maelezo zaidi";
+                }
             break;
             case 2:
                 $response = getCollaborators($user);

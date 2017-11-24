@@ -66,10 +66,10 @@
         } // End Switch 
     } //End sendInfo()
 
-    function getDrainStatus($sqlClaims)
+    function getDrainStatus($claimsInfo)
     {
-            if(pg_num_rows($sqlClaims) > 0) {
-            $claimsInfo = pg_fetch_assoc($sqlClaims);
+            $drainstatus = "";
+            if($claimsInfo){
                 $mitaro = $claimsInfo['gid'];
 
                 $statusvalue = $claimsInfo['shoveled'];
@@ -84,14 +84,8 @@
                     $drainstatus = 'Hakuna taarifa yoyote inayohusu mtaro wako';
                 } 
                 
-            }else{
-                $drainstatus = "Haujatwaa mtaro wowote,\n
-                               Wasiliana na kiongozi wako wa mtaa\n
-                               kwa maelezo zaidi";
             }
-
-            header('Content-type: res/plain');  
-            return "inside function";
+            return $drainstatus;
     }
 
     function getCollaborators($userId)

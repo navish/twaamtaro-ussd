@@ -44,9 +44,9 @@ $app->post('/', function() use($app) {
         $role = $user_row['role'];     
 
         $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
-        echo $sqlClaims;
-
-        return 'CON test';       
+        
+        header('Content-type: res/plain');
+        return 'CON test'.$sqlClaims;       
 
     if ( $res == "" ) {
         $response = dWelcomeMenu($mhusika); 

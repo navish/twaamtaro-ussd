@@ -71,7 +71,7 @@ $app->post('/', function() use($app) {
         switch ($level[1]) {
             case 1:
                $response = getDrainStatus($user);
-               $response = "END Problem";
+               // $response = "END Problem";
             break;
             case 2:
                 $response = getCollaborators($user);

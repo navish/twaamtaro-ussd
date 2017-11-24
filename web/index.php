@@ -85,6 +85,7 @@ $app->post('/', function() use($app) {
                                Wasiliana na kiongozi wako wa mtaa
                                kwa maelezo zaidi";
                 }
+                $response = 'END '.$response
             break;
             case 2:
                 $response = getCollaborators($user);

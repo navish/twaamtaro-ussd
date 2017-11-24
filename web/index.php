@@ -36,16 +36,18 @@ $app->post('/', function() use($app) {
 
       $citizen = pg_query($dbcon, "SELECT * FROM users WHERE sms_number='$phonenumber'");
 
+
     if (pg_num_rows($citizen) > 0) {
         $user_row = pg_fetch_assoc($citizen);
         $user = $user_row['id'];
         $mhusika = $user_row['first_name'].' '.$user_row['last_name'];
-        $role = $user_row['role'];            
+        $role = $user_row['role'];        
 
     if ( $res == "" ) {
         $response = dWelcomeMenu($mhusika); 
     }
     if(isset($level[0]) && $level[0]!= "" && !isset($level[1])){
+        error_log("first level");
         switch ($level[0]) {
             case 1:
                $response = dGetInfoMenu();
@@ -68,9 +70,22 @@ $app->post('/', function() use($app) {
          
     }
     else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[2])){
+        error_log("secon level if");
         switch ($level[1]) {
             case 1:
-               $response = getDrainStatus($user);
+                $sqlClaims = pg_query($dbcon, "SELECT * FROM drain_claims WHERE user_id='$user'");
+                
+                if(pg_num_rows($sqlClaims) > 0) {
+                  
+                  $claimsInfo = pg_fetch_assoc($sqlClaims);
+                  $response = getDrainStatus($claimsInfo);
+                  
+                } else{
+                  $response = "Haujatwaa mtaro wowote,
+                               Wasiliana na kiongozi wako wa mtaa
+                               kwa maelezo zaidi";
+                }
+                $response = 'END '.$response;
             break;
             case 2:
                 $response = getCollaborators($user);
@@ -82,6 +97,7 @@ $app->post('/', function() use($app) {
         
     }
     else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && !isset($level[2])){
+        error_log("third level if");
         $response = sendInfo($level[1],$user);
     }
     

@@ -13,7 +13,7 @@
         $welcomemenu =" CON ".$user." Karibu Twaa Mtaro. \nChagua Huduma ".$menulist;
         return $welcomemenu;
     }
-    
+
     //Display Get Information Menu
     function dGetInfoMenu() {
         $menu ="CON Chagua Huduma\n1. Hali ya Mtaro wako \n2. Washirika";
@@ -70,6 +70,7 @@
     {
         $dbcon = db();
         $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
+        $drainstatus = "";
             if(pg_num_rows($sqlClaims) > 0) {
             $claimsInfo = pg_fetch_assoc($sqlClaims);
                 $mitaro = $claimsInfo['gid'];
@@ -87,8 +88,8 @@
                 } 
                 
             }else{
-                $drainstatus = "Haujatwaa mtaro wowote,\n
-                               Wasiliana na kiongozi wako wa mtaa\n
+                $drainstatus = "Haujatwaa mtaro wowote,
+                               Wasiliana na kiongozi wako wa mtaa
                                kwa maelezo zaidi";
             }
             return $drainstatus;

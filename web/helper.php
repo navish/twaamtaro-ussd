@@ -4,19 +4,22 @@
     //-------------------------------BEGIN MENUS-----------------------------------//
     //------------------------------------------------------------------------------
     function dWelcomeMenu($user) {
-        $menulist ="
+        $menulist = "
         1.Pata Taarifa
         2.Tuma Taarifa
         3.Omba Msaada        
         4.Badili Lugha";
+
         $welcomemenu =" CON ".$user." Karibu Twaa Mtaro. \nChagua Huduma ".$menulist;
         return $welcomemenu;
     }
+    
     //Display Get Information Menu
     function dGetInfoMenu() {
         $menu ="CON Chagua Huduma\n1. Hali ya Mtaro wako \n2. Washirika";
         return $menu;
     } 
+
     // Display Send Information Menu
     function dSendInfoMenu() {
         $menu ="CON Chagua Huduma\n1. Nimefanya usafi\n2. Uchafu haujatolewa";
@@ -39,6 +42,7 @@
         } 
         return $citizen;
     }
+
     function sendInfo($info,$userId) {
         $dbcon = db(); 
         switch ($info) {
@@ -61,27 +65,35 @@
             break;
         } // End Switch 
     } //End sendInfo()
+
     function getDrainStatus($userId)
     {
         $dbcon = db();
         $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
             if(pg_num_rows($sqlClaims) > 0) {
-            $claimsInfo=pg_fetch_assoc($sqlClaims);
-                $mitaro =$claimsInfo['gid'];
-                $statusvalue =$claimsInfo['shoveled'];
+            $claimsInfo = pg_fetch_assoc($sqlClaims);
+                $mitaro = $claimsInfo['gid'];
+
+                $statusvalue = $claimsInfo['shoveled'];
+
                 if ($statusvalue === t) {
-                    $drainstatus ='Mtaro wako ni msafi';
+                    $drainstatus = 'Mtaro wako ni msafi';
                 }
                 elseif ($statusvalue === f)  {
-                    $drainstatus ='Mtaro wako ni mchafu';
+                    $drainstatus = 'Mtaro wako ni mchafu';
                 }
                 elseif ($statusvalue === null)  {
-                    $drainstatus ='Hakuna taarifa yoyote inayohusu mtaro wako';
+                    $drainstatus = 'Hakuna taarifa yoyote inayohusu mtaro wako';
                 } 
-                return $drainstatus;
-            } 
-            
+                
+            }else{
+                $drainstatus = "Haujatwaa mtaro wowote,\n
+                               Wasiliana na kiongozi wako wa mtaa\n
+                               kwa maelezo zaidi";
+            }
+            return $drainstatus;
     }
+
     function getCollaborators($userId)
     {   
         $dbcon = db();

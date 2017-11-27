@@ -142,13 +142,14 @@
         $dbcon = db();
         $categoriesMenu = '';
         $sqlCategories = pg_query($dbcon,"SELECT * FROM need_help_categories");
-        $categoriesMenu.='<ol>';
+        $categoryNo = 1;
             while ($categories=pg_fetch_assoc($sqlCategories)) {
+                count($categories);
                     $category =$categories['category_name'];
-                    $categoriesMenu.='<li>'.$category.'</li> ';
-                     
+                    $categoriesMenu.= ' '.$categoryNo.'. '.$category;
+            
+            $categoryNo++;         
             }
-        $categoriesMenu.='</ol>';
         return "CON Chagua aina ya msaada ". $categoriesMenu;
     }
     

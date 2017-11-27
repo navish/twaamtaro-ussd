@@ -50,7 +50,7 @@
             case 1:
                 $sqlClaim = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
                 
-                if(pg_num_rows($sqlClaims) > 0) {
+                if(pg_num_rows($sqlClaim) > 0) {
                     $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId");
                     if ($sendClean) {
                         return "END Umefanikiwa kutuma taarifa";

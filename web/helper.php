@@ -3,7 +3,8 @@
     //------------------------------------------------------------------------------
     //-------------------------------BEGIN MENUS-----------------------------------//
     //------------------------------------------------------------------------------
-    function dWelcomeMenu($user) {
+    function dWelcomeMenu($user) 
+    {
         $menulist = "
         1.Pata Taarifa
         2.Tuma Taarifa
@@ -12,6 +13,56 @@
 
         $welcomemenu =" CON ".$user." Karibu Twaa Mtaro. \nChagua Huduma ".$menulist;
         return $welcomemenu;
+    }
+
+    //Display a list of all districts
+    function dDistrictsMenu() 
+    {
+        $districtsList = "
+        1. Kinondoni
+        2. Ilala
+        3. Temeke        
+        4. Ubungo
+        5. Kigamboni";
+
+        $districtsmenu =" CON OMBA MSAADA
+        Chagua Wilaya ".$districtsList;
+        return $districtsmenu;
+    }
+
+    //Display a list of all list streets
+    function dStreetsMenu() 
+    {
+        $dbcon = db();
+        $streetsList  = '';
+
+        $sqlStreets = pg_query($dbcon,"SELECT * FROM streets");
+        if (pg_num_rows($sqlStreets) > 0) {
+
+            $allStreets = count($streets);
+            $treetNo = 1;
+
+            while ($streetRow=pg_fetch_assoc($sqlStreets)) {
+                    $street = $streetRow['street_name'];
+                    $streetsList .= ' '.$streetNo.'. '.$street;
+            
+            $streetNo++;         
+            }            
+        }
+        else {
+            $streetsMenu = "END Hakuna mitaa kwenye kata hii";
+        } 
+        return $streetsList;
+    }
+
+    //Display a list of all wards
+    function dWardsMenu() {
+        $wardsList = "
+        1. Hananasifu
+        2. Mbuyuni";
+
+        $wardsmenu =" CON Chagua Wilaya ".$wardsList;
+        return $wardsmenu;
     }
 
     //Display Get Information Menu
@@ -26,16 +77,17 @@
         return $menu;
     } 
     //---------------------------END MENUS-----------------------------------------// 
-    //------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------//
     //--------------------------BEGIN FUNCTIONS------------------------------------//
-    //------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------//
+
     function getUser($id)
     {
         $dbcon = db();
         $sqlCitizen = pg_query($dbcon,"SELECT * FROM users WHERE id=$id");
         if (pg_num_rows($sqlCitizen) > 0) {
             $user_row=pg_fetch_assoc($sqlCitizen);
-            $citizen = $user_row['first_name'].' '.$user_row['last_name'];            
+            $citizen = $user_ow['first_name'].' '.$user_row['last_name'];            
         }
         else {
             $citizen = "Hakuna mwananchi mwenye id hii";
@@ -137,14 +189,30 @@
         return "END ".$collaborators;
     } //End getting collaborators
 
+
+    //Get Drains from a specific street
+    function getStreetDranis($streetId)
+    {
+        $dbcon = db();
+        $sqlDrains = pg_query($dbcon,"SELECT * FROM mitaro_dar WHERE street_id=$streetId");
+        if (pg_num_rows($sqlDrains) > 0) {
+            $drain_row=pg_fetch_assoc($sqlDrains);
+            $drains = $drain_row['address'].' '.$drain_row['gid'];            
+        }
+        else {
+            $drains = " Hakuna mitaro yoyote katika mtaa huu";
+        }
+        return "END ".$drains;
+    } //End getting drains from streets
+
     function getHelpCategories() //Gets Help Categories from the DB
     {
         $dbcon = db();
         $categoriesMenu = '';
+        $allCategories = count($categories);
         $sqlCategories = pg_query($dbcon,"SELECT * FROM need_help_categories");
         $categoryNo = 1;
             while ($categories=pg_fetch_assoc($sqlCategories)) {
-                count($categories);
                     $category =$categories['category_name'];
                     $categoriesMenu.= ' '.$categoryNo.'. '.$category;
             
@@ -159,26 +227,37 @@
         $helpText = "";
         $helpDetails = explode("*", $res);
 
-        if(count($helpDetails)==1) {
-            //Enter Drain Id
-            $helpText .= "CON OMBA MSAADA
-                        Ingiza namba ya mtaro";
+        if(count($helpDetails) == 1) {
+            //Districts List
+            $helpText .= dDistrictsMenu();
             return $helpText;
         }
-        else if(count($helpDetails)==2) {
+        else if(count($helpDetails) == 2) {
+            //Enter Streets List
+            $helpText .= dStreetsMenu();
+            return $helpText;
+        }
+        else if(count($helpDetails) == 3) {
+            //Enter Drain Id
+            $helpText .= "CON OMBA MSAADA  Ingiza namba ya mtaro";
+            return $helpText;
+        }
+        else if(count($helpDetails) == 4) {
             //Enter HelpCategory
             $helpText .= getHelpCategories();
             return $helpText;
         }
-        else if(count($helpDetails) == 3){
-            $helpText .="CON Ongeza maelezo (Sio lazima)";
+        else if(count($helpDetails) == 5){
+            $helpText .="CON Ongeza maelezo ";
             return $helpText;
         }
-        else if(count($helpDetails) == 4) {
+        else if(count($helpDetails) == 6) {
 
-            $drainId = $helpDetails[1];
-            $helpCategory = $helpDetails[2];
-            $helpNeeded = $helpDetails[3]; 
+            $districtId = $helpDetails[1];
+            $streetId = $helpDetails[2];
+            $drainId = $helpDetails[3];
+            $helpCategory = $helpDetails[4];
+            $helpNeeded = $helpDetails[5]; 
 
             //Send Help Details to the DB
             $sqlHelp = pg_query($dbcon, 
@@ -194,6 +273,7 @@
         }
 
     }
+
     function switchLang()
     {
         echo "END Huduma hii haipatikani kwa sasa\n";

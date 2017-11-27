@@ -40,6 +40,7 @@ $app->post('/', function() use($app) {
     if (pg_num_rows($citizen) > 0) {
         $user_row = pg_fetch_assoc($citizen);
         $user = $user_row['id'];
+        $street = $user_row['street_id'];
         $mhusika = $user_row['first_name'].' '.$user_row['last_name'];
         $role = $user_row['role'];        
 

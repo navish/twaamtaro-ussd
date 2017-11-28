@@ -195,15 +195,26 @@
     function getStreetDrains($streetId)
     {
         $dbcon = db();
-        $sqlDrains = pg_query($dbcon,"SELECT * FROM mitaro_dar WHERE street_id=$streetId");
+        $drains = "";
+        $sqlDrains = pg_query($dbcon,"SELECT * FROM drains_streets WHERE street_id = $streetId");
         if (pg_num_rows($sqlDrains) > 0) {
-            $drain_row=pg_fetch_assoc($sqlDrains);
-            $drains = ' '.$drain_row['address'].','.$drain_row['gid'];            
+            
+            while ($drainRows = pg_fetch_assoc($sqlDrains)) {
+                $drain = $drainRows['drain_id'];
+                
+                $sqlDrainDetails = pg_query($dbcon,"SELECT * FROM mitaro_dar WHERE gid = $drain");
+               
+                $drainName = pg_fetch_assoc($sqlDrainDetails);
+                echo $drainName['address'];
+                $drains .= "\n".$drainName['address'].", ".$drainName['gid']; 
+             
+            }
+                     
         }
         else {
-            $drains = " Hakuna mitaro yoyote katika mtaa huu";
+            $drains = "\n Hakuna mitaro yoyote katika mtaa huu";
         }
-        return "END ".$drains;
+        return $drains;
     } //End getting drains from streets
 
 

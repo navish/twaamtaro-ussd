@@ -44,7 +44,7 @@
 
             while ($streetRow=pg_fetch_assoc($sqlStreets)) {
                     $street = $streetRow['street_name'];
-                    $streetsList .= ' '.$streetNo.'. '.$street;
+                    $streetsList .= "\n".$streetNo.". ".$street;
             
             $streetNo++;         
             } 
@@ -209,13 +209,13 @@
     function getHelpCategories() //Gets Help Categories from the DB
     {
         $dbcon = db();
-        $categoriesMenu = '';
+        $categoriesMenu = "";
         $allCategories = count($categories);
         $sqlCategories = pg_query($dbcon,"SELECT * FROM need_help_categories");
         $categoryNo = 1;
             while ($categories=pg_fetch_assoc($sqlCategories)) {
                     $category =$categories['category_name'];
-                    $categoriesMenu.= ' '.$categoryNo.'. '.$category;
+                    $categoriesMenu.= "\n".$categoryNo.". ".$category;
             
             $categoryNo++;         
             }

@@ -34,7 +34,7 @@
     function dStreetsMenu() 
     {
         $dbcon = db();
-        //$streetsList  = '';
+        $streetsList  = '';
 
         $sqlStreets = pg_query($dbcon,"SELECT * FROM streets");
         if (pg_num_rows($sqlStreets) > 0) {
@@ -192,19 +192,21 @@
 
 
     //Get Drains from a specific street
-    function getStreetDranis($streetId)
+    function getStreetDrains($streetId)
     {
         $dbcon = db();
         $sqlDrains = pg_query($dbcon,"SELECT * FROM mitaro_dar WHERE street_id=$streetId");
         if (pg_num_rows($sqlDrains) > 0) {
             $drain_row=pg_fetch_assoc($sqlDrains);
-            $drains = $drain_row['address'].' '.$drain_row['gid'];            
+            $drains = ' '.$drain_row['address'].','.$drain_row['gid'];            
         }
         else {
             $drains = " Hakuna mitaro yoyote katika mtaa huu";
         }
         return "END ".$drains;
     } //End getting drains from streets
+
+
 
     function getHelpCategories() //Gets Help Categories from the DB
     {
@@ -236,12 +238,12 @@
         else if(count($helpDetails) == 2) {
             //Enter Streets List
             $helpText .= dStreetsMenu();
-            error_log(dStreetsMenu());
             return $helpText;
         }
         else if(count($helpDetails) == 3) {
             //Enter Drain Id
-            $helpText .= "CON OMBA MSAADA  Ingiza namba ya mtaro";
+            //$helpText .= "CON OMBA MSAADA  Ingiza namba ya mtaro";
+            $helpText .= "CON OMBA MSAADA Chagua mtaro ".getStreetDrains($helpDetails[2]) ;
             return $helpText;
         }
         else if(count($helpDetails) == 4) {

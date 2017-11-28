@@ -30,29 +30,30 @@
         return $districtsmenu;
     }
 
-    //Display a list of all list streets
+    //Display a list of all streets
     function dStreetsMenu() 
     {
         $dbcon = db();
-        $streetsList  = '';
+        //$streetsList  = '';
 
         $sqlStreets = pg_query($dbcon,"SELECT * FROM streets");
         if (pg_num_rows($sqlStreets) > 0) {
 
             $allStreets = count($streets);
-            $treetNo = 1;
+            $streetNo = 1;
 
             while ($streetRow=pg_fetch_assoc($sqlStreets)) {
                     $street = $streetRow['street_name'];
                     $streetsList .= ' '.$streetNo.'. '.$street;
             
             $streetNo++;         
-            }            
+            } 
+            $streetsMenu = "CON Chagua mtaa ".$streetsList;      
         }
         else {
             $streetsMenu = "END Hakuna mitaa kwenye kata hii";
         } 
-        return $streetsList;
+        return $streetsMenu;
     }
 
     //Display a list of all wards
@@ -235,6 +236,7 @@
         else if(count($helpDetails) == 2) {
             //Enter Streets List
             $helpText .= dStreetsMenu();
+            error_log(dStreetsMenu());
             return $helpText;
         }
         else if(count($helpDetails) == 3) {

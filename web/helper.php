@@ -3,7 +3,8 @@
     //------------------------------------------------------------------------------
     //-------------------------------BEGIN MENUS-----------------------------------//
     //------------------------------------------------------------------------------
-    function dWelcomeMenu($user) {
+    function dWelcomeMenu($user) 
+    {
         $menulist = "
         1.Pata Taarifa
         2.Tuma Taarifa
@@ -12,6 +13,57 @@
 
         $welcomemenu =" CON ".$user." Karibu Twaa Mtaro. \nChagua Huduma ".$menulist;
         return $welcomemenu;
+    }
+
+    //Display a list of all districts
+    function dDistrictsMenu() 
+    {
+        $districtsList = "
+        1. Kinondoni
+        2. Ilala
+        3. Temeke        
+        4. Ubungo
+        5. Kigamboni";
+
+        $districtsmenu =" CON OMBA MSAADA
+        Chagua Wilaya ".$districtsList;
+        return $districtsmenu;
+    }
+
+    //Display a list of all streets
+    function dStreetsMenu() 
+    {
+        $dbcon = db();
+        $streetsList  = '';
+
+        $sqlStreets = pg_query($dbcon,"SELECT * FROM streets");
+        if (pg_num_rows($sqlStreets) > 0) {
+
+            $allStreets = count($streets);
+            $streetNo = 1;
+
+            while ($streetRow=pg_fetch_assoc($sqlStreets)) {
+                    $street = $streetRow['street_name'];
+                    $streetsList .= "\n".$streetNo.". ".$street;
+            
+            $streetNo++;         
+            } 
+            $streetsMenu = "CON Chagua mtaa ".$streetsList;      
+        }
+        else {
+            $streetsMenu = "END Hakuna mitaa kwenye kata hii";
+        } 
+        return $streetsMenu;
+    }
+
+    //Display a list of all wards
+    function dWardsMenu() {
+        $wardsList = "
+        1. Hananasifu
+        2. Mbuyuni";
+
+        $wardsmenu =" CON Chagua Wilaya ".$wardsList;
+        return $wardsmenu;
     }
 
     //Display Get Information Menu
@@ -26,16 +78,17 @@
         return $menu;
     } 
     //---------------------------END MENUS-----------------------------------------// 
-    //------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------//
     //--------------------------BEGIN FUNCTIONS------------------------------------//
-    //------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------//
+
     function getUser($id)
     {
         $dbcon = db();
         $sqlCitizen = pg_query($dbcon,"SELECT * FROM users WHERE id=$id");
         if (pg_num_rows($sqlCitizen) > 0) {
             $user_row=pg_fetch_assoc($sqlCitizen);
-            $citizen = $user_row['first_name'].' '.$user_row['last_name'];            
+            $citizen = $user_ow['first_name'].' '.$user_row['last_name'];            
         }
         else {
             $citizen = "Hakuna mwananchi mwenye id hii";
@@ -48,12 +101,20 @@
         switch ($info) {
             //Citizen has cleaned their drain
             case 1:
-                $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId");
-                if ($sendClean) {
-                    return "END Umefanikiwa kutuma taarifa";
-                } else {
-                    return "END Haujafanikiwa kutuma taarifa";
+                $sqlClaim = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
+                
+                if(pg_num_rows($sqlClaim) > 0) {
+                    $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId");
+                    if ($sendClean) {
+                        return "END Umefanikiwa kutuma taarifa";
+                    } else {
+                        return "END Haujafanikiwa kutuma taarifa";
+                    }
                 }
+                else
+                    {
+                        return "END Taarifa yako haijatumwa. Hauna mtaro wowote.";
+                    }
             break;
 
             //Citizen reporting rubbish collection
@@ -71,15 +132,16 @@
     {
         $dbcon = db();
         $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
+
             if(pg_num_rows($sqlClaims) > 0) {
             $claimsInfo=pg_fetch_assoc($sqlClaims);
                 $mitaro =$claimsInfo['gid'];
                 $statusvalue =$claimsInfo['shoveled'];
 
-                if ($statusvalue === t) {
+                if ($statusvalue = true) {
                     $drainstatus ='Mtaro wako ni msafi';
                 }
-                elseif ($statusvalue === false)  {
+                elseif ($statusvalue = false)  {
                     $drainstatus = 'Mtaro wako ni mchafu';
                 }
                 elseif ($statusvalue === null)  {
@@ -107,12 +169,12 @@
             $sqlCollaborator = pg_query($dbcon,"SELECT * FROM drain_claims WHERE gid=$drain AND user_id != $userId");
             //Check if there is any collaborator
               if(pg_num_rows($sqlCollaborator) > 0) {
-                $collaborators = 'Washirika wako ni: <br>';
+                $collaborators = 'Washirika wako ni: ';
 
                 //Get collaborators' names from users table
                 while ($collaboratorInfo=pg_fetch_assoc($sqlCollaborator)) {
                     $user =$collaboratorInfo['user_id'];
-                    $collaborators .= getUser($user).'<br>';
+                    $collaborators .= getUser($user).'  ';
                     
                 }
               } //End getting collaborators details
@@ -128,48 +190,89 @@
         return "END ".$collaborators;
     } //End getting collaborators
 
+
+    //Get Drains from a specific street
+    function getStreetDrains($streetId)
+    {
+        $dbcon = db();
+        $drains = "";
+        $sqlDrains = pg_query($dbcon,"SELECT * FROM drains_streets WHERE street_id = $streetId");
+        if (pg_num_rows($sqlDrains) > 0) {
+            
+            while ($drainRows = pg_fetch_assoc($sqlDrains)) {
+                $drain = $drainRows['drain_id'];
+                
+                $sqlDrainDetails = pg_query($dbcon,"SELECT * FROM mitaro_dar WHERE gid = $drain");
+               
+                $drainName = pg_fetch_assoc($sqlDrainDetails);
+                echo $drainName['address'];
+                $drains .= "\n".$drainName['address'].", ".$drainName['gid']; 
+             
+            }
+                     
+        }
+        else {
+            $drains = "\n Hakuna mitaro yoyote katika mtaa huu";
+        }
+        return $drains;
+    } //End getting drains from streets
+
+
+
     function getHelpCategories() //Gets Help Categories from the DB
     {
         $dbcon = db();
-        $categoriesMenu = '';
+        $categoriesMenu = "";
+        $allCategories = count($categories);
         $sqlCategories = pg_query($dbcon,"SELECT * FROM need_help_categories");
-        $categoriesMenu.='<ol>';
+        $categoryNo = 1;
             while ($categories=pg_fetch_assoc($sqlCategories)) {
                     $category =$categories['category_name'];
-                    $categoriesMenu.='<li>'.$category.'</li> ';
-                     
+                    $categoriesMenu.= "\n".$categoryNo.". ".$category;
+            
+            $categoryNo++;         
             }
-        $categoriesMenu.='</ol>';
         return "CON Chagua aina ya msaada ". $categoriesMenu;
     }
     
-    function askForHelp($res,$user)
-    {   
-        $dbcon = db();
-        
+    function askForHelp($res, $user)
+    {      
+        $dbcon = db();    
         $helpText = "";
         $helpDetails = explode("*", $res);
 
-        if(count($helpDetails)==1) {
-            //Enter Drain Id
-            $helpText .= "CON OMBA MSAADA
-                        Ingiza namba ya mtaro";
+        if(count($helpDetails) == 1) {
+            //Districts List
+            $helpText .= dDistrictsMenu();
             return $helpText;
         }
-        else if(count($helpDetails)==2) {
+        else if(count($helpDetails) == 2) {
+            //Enter Streets List
+            $helpText .= dStreetsMenu();
+            return $helpText;
+        }
+        else if(count($helpDetails) == 3) {
+            //Enter Drain Id
+            //$helpText .= "CON OMBA MSAADA  Ingiza namba ya mtaro";
+            $helpText .= "CON OMBA MSAADA Chagua mtaro ".getStreetDrains($helpDetails[2]) ;
+            return $helpText;
+        }
+        else if(count($helpDetails) == 4) {
             //Enter HelpCategory
             $helpText .= getHelpCategories();
             return $helpText;
         }
-        else if(count($helpDetails) == 3){
-            $helpText .="CON Ongeza maelezo (Sio lazima)";
+        else if(count($helpDetails) == 5){
+            $helpText .="CON Ongeza maelezo ";
             return $helpText;
         }
-        else if(count($helpDetails) == 4) {
+        else if(count($helpDetails) == 6) {
 
-            $drainId = $helpDetails[1];
-            $helpCategory = $helpDetails[2];
-            $helpNeeded = $helpDetails[3]; 
+            $districtId = $helpDetails[1];
+            $streetId = $helpDetails[2];
+            $drainId = $helpDetails[3];
+            $helpCategory = $helpDetails[4];
+            $helpNeeded = $helpDetails[5]; 
 
             //Send Help Details to the DB
             $sqlHelp = pg_query($dbcon, 
@@ -185,6 +288,7 @@
         }
 
     }
+
     function switchLang()
     {
         echo "END Huduma hii haipatikani kwa sasa\n";

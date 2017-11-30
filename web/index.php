@@ -40,6 +40,7 @@ $app->post('/', function() use($app) {
     if (pg_num_rows($citizen) > 0) {
         $user_row = pg_fetch_assoc($citizen);
         $user = $user_row['id'];
+        $street = $user_row['street_id'];
         $mhusika = $user_row['first_name'].' '.$user_row['last_name'];
         $role = $user_row['role'];        
 
@@ -56,8 +57,7 @@ $app->post('/', function() use($app) {
                 $response = dSendInfoMenu();
             break;
             case 3:
-                $response = askForHelp($user);
-                
+                $response = askForHelp($res,$user);
             break;
             case 4:
                 $response = switchLang();
@@ -71,8 +71,8 @@ $app->post('/', function() use($app) {
     }
     else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[2])){
         switch ($level[1]) {
-            case 1:
-                $response = getDrainStatus($user);
+            case 1:                
+                  $response = getDrainStatus($user);
             break;
             case 2:
                 $response = getCollaborators($user);

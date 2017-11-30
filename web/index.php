@@ -60,7 +60,7 @@ $app->post('/', function() use($app) {
                 $response = askForHelp($res,$user);
             break;
             case 4:
-                $response = switchLang();
+                $response = dLangMenu();
             break;
             
             default:
@@ -90,7 +90,17 @@ $app->post('/', function() use($app) {
     else if(isset($level[1]) && $level[1]!="" && $level[0]=="3"){
         $response = askForHelp($res, $user);
         }//End Need Help
-
+        
+    else if(isset($level[1]) && $level[1]!="" && $level[0]=="4" && !isset($level[2])){
+        if ($level[1] == "1") {
+            $lang = "sw";
+        }
+        elseif ($level[1] == "2"){
+            $lang = "en";
+        }
+        $response = switchLang($lang);
+        }
+        
     }//End If citizen is registered
 
     else { 

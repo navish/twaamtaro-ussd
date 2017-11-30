@@ -9,7 +9,7 @@
         1.Pata Taarifa
         2.Tuma Taarifa
         3.Omba Msaada        
-        4.Badili Lugha";
+        4.English";
 
         $welcomemenu =" CON ".$user." Karibu Twaa Mtaro. \nChagua Huduma ".$menulist;
         return $welcomemenu;
@@ -60,9 +60,16 @@
     function dWardsMenu() {
         $wardsList = "
         1. Hananasifu
-        2. Mbuyuni";
+        2. Kigogo
+        3. Magomeni
+        4. Makumbusho
+        5. Msasani
+        5. Mwananyamala
+        6. Mzimuni
+        7. Ndugumbi
+        8. Tandale ";
 
-        $wardsmenu =" CON Chagua Wilaya ".$wardsList;
+        $wardsmenu =" CON Chagua Kata ".$wardsList;
         return $wardsmenu;
     }
 
@@ -77,6 +84,12 @@
         $menu ="CON Chagua Huduma\n1. Nimefanya usafi\n2. Uchafu haujatolewa";
         return $menu;
     } 
+    // Display Languages Menu
+    function dLangMenu() {
+        $menu ="CON \n1. Kiswahili \n2. English";
+        return $menu;
+    } 
+
     //---------------------------END MENUS-----------------------------------------// 
     //-----------------------------------------------------------------------------//
     //--------------------------BEGIN FUNCTIONS------------------------------------//
@@ -134,19 +147,21 @@
         $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
 
             if(pg_num_rows($sqlClaims) > 0) {
-            $claimsInfo=pg_fetch_assoc($sqlClaims);
-                $mitaro =$claimsInfo['gid'];
-                $statusvalue =$claimsInfo['shoveled'];
+                while ($claimsInfo=pg_fetch_assoc($sqlClaims)) {
+                    $mtaro =$claimsInfo['gid'];
 
-                if ($statusvalue = true) {
-                    $drainstatus ='Mtaro wako ni msafi';
-                }
-                elseif ($statusvalue = false)  {
-                    $drainstatus = 'Mtaro wako ni mchafu';
-                }
-                elseif ($statusvalue === null)  {
-                    $drainstatus ='Hakuna taarifa yoyote inayohusu mtaro wako';
-                } 
+                    $statusvalue =$claimsInfo['shoveled'];
+    
+                    if ($statusvalue = true) {
+                        $drainstatus ="Mtaro ".$mtaro.", ni msafi";
+                    }
+                    elseif ($statusvalue = false)  {
+                        $drainstatus = "Mtaro ".$mtaro.", ni mchafu";
+                    }
+                    elseif ($statusvalue === null)  {
+                        $drainstatus ="Hakuna taarifa yoyote inayohusu mtaro wako";
+                    } 
+                }  
             }   
             else
             {
@@ -206,7 +221,7 @@
                
                 $drainName = pg_fetch_assoc($sqlDrainDetails);
                 echo $drainName['address'];
-                $drains .= "\n".$drainName['address'].", ".$drainName['gid']; 
+                $drains .= "\n".$drainName['gid'].", ".$drainName['address']; 
              
             }
                      
@@ -242,37 +257,52 @@
         $helpDetails = explode("*", $res);
 
         if(count($helpDetails) == 1) {
-            //Districts List
+            //Enter District
             $helpText .= dDistrictsMenu();
             return $helpText;
         }
         else if(count($helpDetails) == 2) {
-            //Enter Streets List
-            $helpText .= dStreetsMenu();
+            //Enter Ward
+            if ($helpDetails[1] == 1) { //Temporary Constraint
+                $helpText .= dWardsMenu();
+            } else {
+                $helpText .= "END Huduma hii haijafika kwenye wilaya/manispaa hii";
+            }
             return $helpText;
         }
         else if(count($helpDetails) == 3) {
-            //Enter Drain Id
-            //$helpText .= "CON OMBA MSAADA  Ingiza namba ya mtaro";
-            $helpText .= "CON OMBA MSAADA Chagua mtaro ".getStreetDrains($helpDetails[2]) ;
+            //Enter Street
+            if ($helpDetails[2] == 1) { //Temporary Constraint
+                $helpText .= dStreetsMenu();
+            } else {
+                $helpText .= "END Huduma hii haijafika kwenye kata hii";
+            }
             return $helpText;
         }
+        
         else if(count($helpDetails) == 4) {
+            //Enter Drain Id
+            //$helpText .= "CON OMBA MSAADA  Ingiza namba ya mtaro";
+            $helpText .= "CON OMBA MSAADA Chagua mtaro ".getStreetDrains($helpDetails[3]) ;
+            return $helpText;
+        }
+        else if(count($helpDetails) == 5) {
             //Enter HelpCategory
             $helpText .= getHelpCategories();
             return $helpText;
         }
-        else if(count($helpDetails) == 5){
+        else if(count($helpDetails) == 6){
             $helpText .="CON Ongeza maelezo ";
             return $helpText;
         }
-        else if(count($helpDetails) == 6) {
+        else if(count($helpDetails) == 7) {
 
             $districtId = $helpDetails[1];
-            $streetId = $helpDetails[2];
-            $drainId = $helpDetails[3];
-            $helpCategory = $helpDetails[4];
-            $helpNeeded = $helpDetails[5]; 
+            $wardId = $helpDetails[2];
+            $streetId = $helpDetails[3];
+            $drainId = $helpDetails[4];
+            $helpCategory = $helpDetails[5];
+            $helpNeeded = $helpDetails[6]; 
 
             //Send Help Details to the DB
             $sqlHelp = pg_query($dbcon, 
@@ -289,9 +319,17 @@
 
     }
 
-    function switchLang()
+    function switchLang($language) 
     {
-        echo "END Huduma hii haipatikani kwa sasa\n";
+        if($language == "en") 
+        {
+            return "END Switched to English";
+        } 
+        elseif($language == "sw") 
+        {
+            return "END Unatumia lugha ya Kiswahili";
+        }
+        
     }
     //------------------------------------------------------------------------------
     //          END FUNCTIONS

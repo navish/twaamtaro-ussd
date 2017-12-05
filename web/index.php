@@ -51,12 +51,6 @@ $app->post('/', function() use($app) {
 
         $level = explode("*", $res);
 
-         if ($res == "4") {
-            $lang = updateUserLang($phonenumber);
-
-            $response = dWelcomeMenu($userName, $lang);
-        } 
-
         if(isset($level[0]) && $level[0]!= "" && !isset($level[1])){
             error_log("first level");
             switch ($level[0]) {

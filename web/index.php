@@ -45,74 +45,72 @@ $app->post('/', function() use($app) {
         $userName = $user_row['first_name'].' '.$user_row['last_name'];
         //$role = $user_row['role']; 
 
-
-
-    if ( $res == "" ) {
-        $response = dWelcomeMenu($userName, $lang); 
-    }
-
-    $level = explode("*", $res);
-
-     if ($res == "4") {
-        $lang = updateUserLang($phonenumber);
-
-        $response = dWelcomeMenu($userName, $lang);
-    } 
-
-    if(isset($level[0]) && $level[0]!= "" && !isset($level[1])){
-        error_log("first level");
-        switch ($level[0]) {
-            case 1:
-               $response = dGetInfoMenu($lang);
-            break;
-            case 2:
-                $response = dSendInfoMenu($lang);
-            break;
-            case 3:
-                $response = askForHelp($res,$user,$lang);
-            break;
-            case 4:
-                $response = updateUserLang($phonenumber);
-            break;
-            
-            default:
-                 
-                 if ($lang == "sw") {
-                     $response = "CON Chaguo sio sahihi\n";
-                 } elseif($lang == "en") {
-                     $response = "CON Wrong Choice\n";
-                 }
-                 
-            break;
+        if ( $res == "" ) {
+            $response = dWelcomeMenu($userName, $lang); 
         }
-         
-    }
-    else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[3])){
-        switch ($level[1]) {
-            case 1:                
-                  $response = getDrainStatus($user,$lang);
-            break;
-            case 2:
-                $response = getCollaborators($user,$lang);
-            break;    
-            default:
-                 if ($lang == "sw") {
-                     $response = "CON Chaguo sio sahihi\n";
-                 } elseif($lang == "en") {
-                     $response = "CON Wrong Choice\n";
-                 }
-            break;
-        }   
+
+        $level = explode("*", $res);
+
+         if ($res == "4") {
+            $lang = updateUserLang($phonenumber);
+
+            $response = dWelcomeMenu($userName, $lang);
+        } 
+
+        if(isset($level[0]) && $level[0]!= "" && !isset($level[1])){
+            error_log("first level");
+            switch ($level[0]) {
+                case 1:
+                   $response = dGetInfoMenu($lang);
+                break;
+                case 2:
+                    $response = dSendInfoMenu($lang);
+                break;
+                case 3:
+                    $response = askForHelp($res,$user,$lang);
+                break;
+                case 4:
+                    $response = updateUserLang($phonenumber);
+                break;
+                
+                default:
+                     
+                     if ($lang == "sw") {
+                         $response = "CON Chaguo sio sahihi\n";
+                     } elseif($lang == "en") {
+                         $response = "CON Wrong Choice\n";
+                     }
+                     
+                break;
+            }
+             
+        }
+        else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[3])){
+            switch ($level[1]) {
+                case 1:                
+                      $response = getDrainStatus($user,$lang);
+                break;
+                case 2:
+                    $response = getCollaborators($user,$lang);
+                break;    
+                default:
+                     if ($lang == "sw") {
+                         $response = "CON Chaguo sio sahihi\n";
+                     } elseif($lang == "en") {
+                         $response = "CON Wrong Choice\n";
+                     }
+                break;
+            }   
+            
+        }
+        else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && !isset($level[2])){
+            $response = sendInfo($level[2],$user,$lang);
+        }
         
-    }
-    else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && !isset($level[2])){
-        $response = sendInfo($level[2],$user,$lang);
-    }
-    
-    else if(isset($level[0]) && $level[0]!="" && $level[0]=="3"){
-        $response = askForHelp($res, $user,$lang);
-        }//End Need Help
-        
+        else if(isset($level[0]) && $level[0]!="" && $level[0]=="3"){
+            $response = askForHelp($res, $user,$lang);
+            }//End Need Help
+            
            
         
     }//End If citizen is registered

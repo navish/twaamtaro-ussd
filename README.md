@@ -1,28 +1,9 @@
-# php-getting-started
+# Twaa Mtaro USSD App
 
-A barebones PHP app that makes use of the [Silex](http://silex.sensiolabs.org/) web framework, which can easily be deployed to Heroku.
+The app is part of the Twaa Mtaro Eco-System that is used in collecting citizen feedback on drain cleanness in their neighborhoods using their mobile phones.
 
-This application supports the [Getting Started with PHP on Heroku](https://devcenter.heroku.com/articles/getting-started-with-php) article - check it out.
+Other apps in the eco-system are 
+- [Twaa Mtaro web app](http://twaamtaro.org/) - Shows the map of drains in Dar es salaam and their cleanness status.
 
-## Deploying
+- [Twaa Mtaro Dashboard](http://twaamtarodash.herokuapp.com) - Displays info-graphics from Twaa Mtaro data.
 
-Install the [Heroku Toolbelt](https://toolbelt.heroku.com/).
-
-```sh
-$ git clone git@github.com:heroku/php-getting-started.git # or clone your own fork
-$ cd php-getting-started
-$ heroku create
-$ git push heroku master
-$ heroku open
-```
-
-or
-
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
-
-## Documentation
-
-For more information about using PHP on Heroku, see these Dev Center articles:
-
-- [Getting Started with PHP on Heroku](https://devcenter.heroku.com/articles/getting-started-with-php)
-- [PHP on Heroku](https://devcenter.heroku.com/categories/php)

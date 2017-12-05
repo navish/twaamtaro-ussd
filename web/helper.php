@@ -3,15 +3,37 @@
     //------------------------------------------------------------------------------
     //-------------------------------BEGIN MENUS-----------------------------------//
     //------------------------------------------------------------------------------
-    function dWelcomeMenu($user) 
+   
+    function dWelcomeMenu($user, $lang) 
     {
-        $menulist = "
-        1.Pata Taarifa
-        2.Tuma Taarifa
-        3.Omba Msaada        
-        4.Badili Lugha";
+        
+        if ($lang == "sw" || !isset($lang)) {
+            $menulist = "
+            1. Pata Taarifa
+            2. Tuma Taarifa
+            3. Omba Msaada        
+            4. English";
 
-        $welcomemenu =" CON ".$user." Karibu Twaa Mtaro. \nChagua Huduma ".$menulist;
+            $welcomemenu =" CON ".$user." Karibu Twaa Mtaro. \nChagua Huduma ".$menulist;
+        } elseif($lang == "en") {
+            $menulist = "
+            1. Get Information
+            2. Send Information
+            3. Ask for Help     
+            4. Swahili";
+
+            $welcomemenu =" CON ".$user." Welcome to Twaa Mtaro. \nChoose a service ".$menulist;
+        } else {
+            $menulist = "
+            1. Pata Taarifa
+            2. Tuma Taarifa
+            3. Omba Msaada        
+            4. English";
+
+            $welcomemenu =" CON ".$user." Karibu Twaa Mtaro. \nChagua Huduma ".$menulist;
+        }
+
+
         return $welcomemenu;
     }
 
@@ -60,29 +82,99 @@
     function dWardsMenu() {
         $wardsList = "
         1. Hananasifu
-        2. Mbuyuni";
+        2. Kigogo
+        3. Magomeni
+        4. Makumbusho
+        5. Msasani
+        5. Mwananyamala
+        6. Mzimuni
+        7. Ndugumbi
+        8. Tandale ";
 
-        $wardsmenu =" CON Chagua Wilaya ".$wardsList;
+        $wardsmenu =" CON Chagua Kata ".$wardsList;
         return $wardsmenu;
     }
 
     //Display Get Information Menu
-    function dGetInfoMenu() {
-        $menu ="CON Chagua Huduma\n1. Hali ya Mtaro wako \n2. Washirika";
+    function dGetInfoMenu($lang) {
+        if ($lang == "sw") {
+            $menu ="CON Chagua Huduma\n1. Hali ya Mtaro wako \n2. Washirika";
+        } elseif ($lang == "en") {
+            $menu ="CON Choose a service\n1. Drain Status \n2. Collaborators";
+        } 
+        
         return $menu;
     } 
 
     // Display Send Information Menu
-    function dSendInfoMenu() {
-        $menu ="CON Chagua Huduma\n1. Nimefanya usafi\n2. Uchafu haujatolewa";
+    function dSendInfoMenu($lang) {
+        if ($lang == "sw") {
+            $menu ="CON Chagua Huduma\n1. Nimefanya usafi\n2. Uchafu haujatolewa";
+        } elseif ($lang == "en") {
+            $menu ="CON Choose a service\n1. I cleaned my drain \n2. Garbage was not collected";
+        } 
+        
         return $menu;
     } 
+
     //---------------------------END MENUS-----------------------------------------// 
     //-----------------------------------------------------------------------------//
+
     //--------------------------BEGIN FUNCTIONS------------------------------------//
     //-----------------------------------------------------------------------------//
 
-    function getUser($id)
+    //--------------------------LANGUAGE FUNCTIONS---------------------------------//
+    //-----------------------------------------------------------------------------//
+
+    //Check if user exists in the language table
+    //Create the record if not
+    //Params user number
+    function userLangAssign($phoneNumber)
+    {
+        $dbcon = db();
+
+        $sqlUsers = pg_query($dbcon,"SELECT * FROM ussd_users WHERE phonenumber='$phoneNumber' LIMIT 1");
+        if (pg_num_rows($sqlUsers) > 0) {
+           $user = pg_fetch_assoc($sqlUsers);
+           $lang = $user['language'];
+        }
+        else{
+          $sqlInsertUsers = pg_query($dbcon,"INSERT INTO ussd_users (phonenumber, language) VALUES ('$phoneNumber', 'sw')");
+          $lang = 'sw';
+
+        }
+        return $lang;
+    }
+
+    //Updates the user language
+    //Params user number
+    function updateUserLang($phoneNumber)
+    {
+        $dbcon = db();
+        $lang = changeLang($phoneNumber);
+
+        $sqlUsers = pg_query($dbcon,"UPDATE ussd_users SET language = '$lang' WHERE phonenumber='$phoneNumber'");
+        
+        return $lang;
+    }
+
+    // Changes user language
+    function changeLang($phoneNumber){
+        $lang = userLangAssign($phoneNumber);
+
+        if ($lang == "sw"){
+            $lang = "en";
+        }elseif ($lang == "en"){
+            $lang = "sw";
+        }
+
+        return $lang;
+    }
+
+    //------------------------ END LANGUAGE FUNCTIONS -----------------------------//
+    //-----------------------------------------------------------------------------//
+
+    function getUser($id,$lang)
     {
         $dbcon = db();
         $sqlCitizen = pg_query($dbcon,"SELECT * FROM users WHERE id=$id");
@@ -91,12 +183,18 @@
             $citizen = $user_ow['first_name'].' '.$user_row['last_name'];            
         }
         else {
-            $citizen = "Hakuna mwananchi mwenye id hii";
+            if ($lang == "sw") {
+                $citizen = "Hakuna mwananchi mwenye id hii";
+            } elseif ($lang == "en") {
+               $citizen = "There is no citizen with such ID";
+            }
+            
+            
         } 
         return $citizen;
     }
 
-    function sendInfo($info,$userId) {
+    function sendInfo($info,$userId,$lamg) {
         $dbcon = db(); 
         switch ($info) {
             //Citizen has cleaned their drain
@@ -105,25 +203,53 @@
                 
                 if(pg_num_rows($sqlClaim) > 0) {
                     $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId");
-                    if ($sendClean) {
-                        return "END Umefanikiwa kutuma taarifa";
-                    } else {
-                        return "END Haujafanikiwa kutuma taarifa";
+                    if ($sendClean) 
+                    {
+                        if ($lang=="sw") {
+                            return "END Umefanikiwa kutuma taarifa";
+                        } elseif($lang=="en") {
+                            return "END You have sent the information";
+                        }
+                        
+                    } 
+                    else 
+                    {
+                        if ($lang=="sw") {
+                            return "END Haujafanikiwa kutuma taarifa";
+                        } 
+                        elseif($lang=="en") {
+                            return "END Information sending failed";
+                        }
+                        
                     }
                 }
                 else
                     {
-                        return "END Taarifa yako haijatumwa. Hauna mtaro wowote.";
+                        if ($lang=="sw") {
+                            return "END Taarifa yako haijatumwa. Hauna mtaro wowote.";
+                        } elseif ($lang=="en") {
+                            return "END Information was not sent. You don't have any drain";
+                        }   
                     }
             break;
 
             //Citizen reporting rubbish collection
             case 2:
-                return "END Huduma hii haipo kwa sasa.";
+                if ($lang=="sw") {
+                    return "END Huduma hii haipo kwa sasa.";
+                } elseif ($lang=="en") {
+                    return "END Service is not available for now.";
+                }
+                
             break;
             
             default:
-                return "END Haujafanya chaguo sahihi";
+                if ($lang=="sw") {
+                    return "END Haujafanya chaguo sahihi";
+                } elseif ($lang=="en") {
+                    return "END You picked a wrong choice";
+                }
+                
             break;
         } // End Switch 
     } //End sendInfo()
@@ -134,24 +260,42 @@
         $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
 
             if(pg_num_rows($sqlClaims) > 0) {
-            $claimsInfo=pg_fetch_assoc($sqlClaims);
-                $mitaro =$claimsInfo['gid'];
-                $statusvalue =$claimsInfo['shoveled'];
+                while ($claimsInfo=pg_fetch_assoc($sqlClaims)) {
+                    $mtaro =$claimsInfo['gid'];
 
-                if ($statusvalue = true) {
-                    $drainstatus ='Mtaro wako ni msafi';
-                }
-                elseif ($statusvalue = false)  {
-                    $drainstatus = 'Mtaro wako ni mchafu';
-                }
-                elseif ($statusvalue === null)  {
-                    $drainstatus ='Hakuna taarifa yoyote inayohusu mtaro wako';
-                } 
+                    $statusvalue =$claimsInfo['shoveled'];
+    
+                    if ($statusvalue = true) {
+                        if ($lang=="sw") {
+                            $drainstatus ="Mtaro ".$mtaro.", ni msafi";
+                        } elseif ($lang=="en") {
+                            $drainstatus ="Drain no. ".$mtaro.", is clean";
+                        }
+                    }
+                    elseif ($statusvalue = false)  {
+                        if ($lang=="sw") {
+                            $drainstatus = "Mtaro ".$mtaro.", ni mchafu";
+                        } elseif ($lang=="en") {
+                            $drainstatus ="Drain no. ".$mtaro.", is dirty";
+                        }
+                    }
+                    elseif ($statusvalue === null)  {
+                        if ($lang=="sw") {
+                            $drainstatus ="Hakuna taarifa yoyote inayohusu mtaro wako";
+                        } elseif ($lang=="en") {
+                            $drainstatus ="There is no any information about your drain";
+                        }
+                    }//End Null status 
+                }  
             }   
             else
             {
-                $drainstatus ='Haujatwaa mtaro wowote, 
+                if ($lang=="sw") {
+                    $drainstatus ='Haujatwaa mtaro wowote, 
                             wasiliana na kiongozi wako wa mtaa kwa msaada zaidi.';
+                } elseif ($lang=="en") {
+                    $drainstatus ='You have not adopted any drain, contact your street leader for further assistance.';
+                }
             }
         return "END ".$drainstatus;
     } //End Get Drain Status
@@ -169,23 +313,35 @@
             $sqlCollaborator = pg_query($dbcon,"SELECT * FROM drain_claims WHERE gid=$drain AND user_id != $userId");
             //Check if there is any collaborator
               if(pg_num_rows($sqlCollaborator) > 0) {
-                $collaborators = 'Washirika wako ni: ';
-
+                if ($lang == "sw") {
+                    $collaborators = 'Washirika wako ni: ';
+                } elseif($lang == "en") {
+                    $collaborators = 'Your collaborator(s) are: ';
+                }
+                
                 //Get collaborators' names from users table
                 while ($collaboratorInfo=pg_fetch_assoc($sqlCollaborator)) {
                     $user =$collaboratorInfo['user_id'];
                     $collaborators .= getUser($user).'  ';
-                    
                 }
               } //End getting collaborators details
               else {
-                    $collaborators = 'Hauna washirika wowote kwenye mtaro wako';
+                    if ($lang == "sw") {
+                         $collaborators = "Hauna washirika wowote kwenye mtaro wako";
+                    }
+                    elseif($lang == "en") {
+                         $collaborators = "You don't have any collaborators on your drain";
+                    }
                 }
             } 
             else
             {
-                $collaborators ='Hauna washirika wowote sababu haujatwaa mtaro wowote,
-                            wasiliana na kiongozi wako wa mtaa kwa msaada zaidi.';
+                if ($lang == "sw") {
+                    $collaborators ="Hauna washirika wowote sababu haujatwaa mtaro wowote,
+                            wasiliana na kiongozi wako wa mtaa kwa msaada zaidi.";
+                } elseif($lang == "en") {
+                    $collaborators ="You don't have any collaborators because you have not adopted any drain. Please contact your street leader for further assistance.";
+                }
             } 
         return "END ".$collaborators;
     } //End getting collaborators
@@ -206,20 +362,22 @@
                
                 $drainName = pg_fetch_assoc($sqlDrainDetails);
                 echo $drainName['address'];
-                $drains .= "\n".$drainName['address'].", ".$drainName['gid']; 
-             
+                $drains .= "\n".$drainName['gid'].", ".$drainName['address'];
             }
-                     
         }
         else {
-            $drains = "\n Hakuna mitaro yoyote katika mtaa huu";
+            if ($lang == "sw") {
+                $drains = "\n Hakuna mitaro yoyote katika mtaa huu";
+            } else {
+                $drains = "\n There are no drains in this street";
+            }
         }
         return $drains;
     } //End getting drains from streets
 
 
 
-    function getHelpCategories() //Gets Help Categories from the DB
+    function getHelpCategories($lang) //Gets Help Categories from the DB
     {
         $dbcon = db();
         $categoriesMenu = "";
@@ -227,52 +385,110 @@
         $sqlCategories = pg_query($dbcon,"SELECT * FROM need_help_categories");
         $categoryNo = 1;
             while ($categories=pg_fetch_assoc($sqlCategories)) {
-                    $category =$categories['category_name'];
-                    $categoriesMenu.= "\n".$categoryNo.". ".$category;
-            
+                    $categoryId =$categories['id'];
+
+                    if ($lang == "sw") {
+                        $category =$categories['category_name'];
+                        $categoriesMenu.= "\n".$categoryNo.". ".$category;
+                    } 
+                    elseif($lang == "en") 
+                    {
+                        if ($categoryId == 1) {
+                                $category = "Tools are needed";
+                                $categoriesMenu.= "\n".$categoryNo.". ".$category;
+                            } 
+                        elseif ($categoryId == 2){
+                                $category = "The drain needs to be renovated";
+                                $categoriesMenu.= "\n".$categoryNo.". ".$category;
+                        }
+                        elseif ($categoryId == 3){
+                                $category = "The contractor did not collect trash";
+                                $categoriesMenu.= "\n".$categoryNo.". ".$category;
+                        }
+                        elseif ($categoryId == 4){
+                                $category = "Others";
+                                $categoriesMenu.= "\n".$categoryNo.". ".$category;
+                        }
+                        
+                    }
+                    
             $categoryNo++;         
-            }
-        return "CON Chagua aina ya msaada ". $categoriesMenu;
+        }
+        if ($lang == "sw") {
+             return "CON Chagua aina ya msaada ". $categoriesMenu;
+        } elseif ($lang == "en") {
+             return "CON Choose help category ". $categoriesMenu;
+        }
     }
     
-    function askForHelp($res, $user)
+    function askForHelp($res, $user, $lang)
     {      
         $dbcon = db();    
         $helpText = "";
         $helpDetails = explode("*", $res);
 
         if(count($helpDetails) == 1) {
-            //Districts List
+            //Enter District
             $helpText .= dDistrictsMenu();
             return $helpText;
         }
         else if(count($helpDetails) == 2) {
-            //Enter Streets List
-            $helpText .= dStreetsMenu();
+            //Enter Ward
+            if ($helpDetails[1] == 1) { //Temporary Constraint
+                $helpText .= dWardsMenu();
+            } else {
+
+                if ($lang == "sw") {
+                    $helpText .= "END Huduma hii haijafika kwenye wilaya/manispaa hii";
+                } elseif($lang == "en") {
+                    $helpText .= "END This service is not available for this district/municipal";
+                }
+            }
             return $helpText;
         }
         else if(count($helpDetails) == 3) {
+            //Enter Street
+            if ($helpDetails[2] == 1) { //Temporary Constraint
+                $helpText .= dStreetsMenu();
+            } else {
+                if ($lang == "sw") {
+                    $helpText .= "END Huduma hii haijafika kwenye kata hii";
+                } elseif($lang == "en") {
+                    $helpText .= "END This service is not available in this ward";
+                }
+            }
+            return $helpText;
+        }
+        
+        else if(count($helpDetails) == 4) {
             //Enter Drain Id
             //$helpText .= "CON OMBA MSAADA  Ingiza namba ya mtaro";
-            $helpText .= "CON OMBA MSAADA Chagua mtaro ".getStreetDrains($helpDetails[2]) ;
+            
+            if ($lang == "sw") {
+                $helpText .= "CON OMBA MSAADA Chagua mtaro ".getStreetDrains($helpDetails[3]) ;
+            } elseif($lang == "en") {
+                $helpText .= "CON ASK FOR HELP. Pick a drain ".getStreetDrains($helpDetails[3]) ;
+            }
+            
             return $helpText;
         }
-        else if(count($helpDetails) == 4) {
+        else if(count($helpDetails) == 5) {
             //Enter HelpCategory
-            $helpText .= getHelpCategories();
+            $helpText .= getHelpCategories($lang);
             return $helpText;
         }
-        else if(count($helpDetails) == 5){
+        else if(count($helpDetails) == 6){
             $helpText .="CON Ongeza maelezo ";
             return $helpText;
         }
-        else if(count($helpDetails) == 6) {
+        else if(count($helpDetails) == 7) {
 
             $districtId = $helpDetails[1];
-            $streetId = $helpDetails[2];
-            $drainId = $helpDetails[3];
-            $helpCategory = $helpDetails[4];
-            $helpNeeded = $helpDetails[5]; 
+            $wardId = $helpDetails[2];
+            $streetId = $helpDetails[3];
+            $drainId = $helpDetails[4];
+            $helpCategory = $helpDetails[5];
+            $helpNeeded = $helpDetails[6]; 
 
             //Send Help Details to the DB
             $sqlHelp = pg_query($dbcon, 
@@ -281,18 +497,21 @@
                 VALUES ( '$helpNeeded', $drainId , $user, $helpCategory, now(), now())");
 
             if ($sqlHelp) {
-                return "END Umefanikiwa kuomba msaada kwa ajili ya mtaro namba ".$drainId;
+                if ($lang == "sw") {
+                    return "END Umefanikiwa kuomba msaada kwa ajili ya mtaro namba ".$drainId;
+                } elseif ($lang == "en") {
+                    return "END You have succeeded to ask for help for drain no. ".$drainId;
+                }
             } else {
-                return "END Kuna tatizo limetokea, maombi yako ya msaada hayajatumwa";
+                if ($lang == "sw") {
+                    return "END Kuna tatizo limetokea, maombi yako ya msaada hayajatumwa";
+                } elseif ($lang == "en") {
+                    return "END Something went wrong, your request was not processed";
+                }
             }
         }
-
     }
 
-    function switchLang()
-    {
-        echo "END Huduma hii haipatikani kwa sasa\n";
-    }
     //------------------------------------------------------------------------------
     //          END FUNCTIONS
     //------------------------------------------------------------------------------

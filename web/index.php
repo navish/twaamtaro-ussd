@@ -5,6 +5,7 @@ require('../vendor/autoload.php');
 
 $app = new Silex\Application();
 $app['debug'] = true;
+$app['lang'] = "en";
 
 // Register the monolog logging service
 $app->register(new Silex\Provider\MonologServiceProvider(), array(
@@ -28,74 +29,98 @@ $app->post('/', function() use($app) {
 
     //$sessionId=$_GET['sessionId']; //For any audits/checks
     $dbcon = db(); 
-    $level = explode("*", $res);
     if (isset($res)) {
       if (strpos($phonenumber, '+') !== false) {
           $phonenumber = str_replace('+','',$phonenumber);
-      }
+    }
 
-      $citizen = pg_query($dbcon, "SELECT * FROM users WHERE sms_number='$phonenumber'");
-
+    $citizen = pg_query($dbcon, "SELECT * FROM users WHERE sms_number='$phonenumber'");
+    $lang = userLangAssign($phonenumber);
 
     if (pg_num_rows($citizen) > 0) {
+        error_log("found citizen");
         $user_row = pg_fetch_assoc($citizen);
         $user = $user_row['id'];
         $street = $user_row['street_id'];
-        $mhusika = $user_row['first_name'].' '.$user_row['last_name'];
-        $role = $user_row['role'];        
+        $userName = $user_row['first_name'].' '.$user_row['last_name'];
+        //$role = $user_row['role']; 
 
-    if ( $res == "" ) {
-        $response = dWelcomeMenu($mhusika); 
-    }
-    if(isset($level[0]) && $level[0]!= "" && !isset($level[1])){
-        error_log("first level");
-        switch ($level[0]) {
-            case 1:
-               $response = dGetInfoMenu();
-            break;
-            case 2:
-                $response = dSendInfoMenu();
-            break;
-            case 3:
-                $response = askForHelp($res,$user);
-            break;
-            case 4:
-                $response = switchLang();
-            break;
-            
-            default:
-                 $response = "CON Chaguo sio sahihi\n";
-            break;
+        if ( $res == "" ) {
+            $response = dWelcomeMenu($userName, $lang); 
         }
-         
-    }
-    else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[2])){
-        switch ($level[1]) {
-            case 1:                
-                  $response = getDrainStatus($user);
-            break;
-            case 2:
-                $response = getCollaborators($user);
-            break;    
-            default:
-                 $response = "CON Chaguo sio sahihi\n";
-            break;
-        }   
-        
-    }
-    else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && !isset($level[2])){
-        $response = sendInfo($level[1],$user);
-    }
-    
-    else if(isset($level[1]) && $level[1]!="" && $level[0]=="3"){
-        $response = askForHelp($res, $user);
-        }//End Need Help
 
+        $level = explode("*", $res);
+
+         if ($res == "4") {
+            $lang = updateUserLang($phonenumber);
+
+            $response = dWelcomeMenu($userName, $lang);
+        } 
+
+        if(isset($level[0]) && $level[0]!= "" && !isset($level[1])){
+            error_log("first level");
+            switch ($level[0]) {
+                case 1:
+                   $response = dGetInfoMenu($lang);
+                break;
+                case 2:
+                    $response = dSendInfoMenu($lang);
+                break;
+                case 3:
+                    $response = askForHelp($res,$user,$lang);
+                break;
+                case 4:
+                    $response = updateUserLang($phonenumber);
+                break;
+                
+                default:
+                     
+                     if ($lang == "sw") {
+                         $response = "CON Chaguo sio sahihi\n";
+                     } elseif($lang == "en") {
+                         $response = "CON Wrong Choice\n";
+                     }
+                     
+                break;
+            }
+             
+        }
+        else if(isset($level[1]) && $level[1]!="" && $level[0]=="1"  && !isset($level[3])){
+            switch ($level[1]) {
+                case 1:                
+                      $response = getDrainStatus($user,$lang);
+                break;
+                case 2:
+                    $response = getCollaborators($user,$lang);
+                break;    
+                default:
+                     if ($lang == "sw") {
+                         $response = "CON Chaguo sio sahihi\n";
+                     } elseif($lang == "en") {
+                         $response = "CON Wrong Choice\n";
+                     }
+                break;
+            }   
+            
+        }
+        else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && !isset($level[2])){
+            $response = sendInfo($level[2],$user,$lang);
+        }
+        
+        else if(isset($level[0]) && $level[0]!="" && $level[0]=="3"){
+            $response = askForHelp($res, $user,$lang);
+            }//End Need Help
+            
+           
+        
     }//End If citizen is registered
 
     else { 
-
-      $response = "END Namba yako, ".$phonenumber." haijasajiliwa na Twaa Mtaro. Wasiliana na kiongozi wako wa mtaa kwa msaada zaidi "; 
+        if ($lang == "sw") {
+           $response = "END Namba yako, ".$phonenumber." haijasajiliwa na Twaa Mtaro. Wasiliana na kiongozi wako wa mtaa kwa msaada zaidi. "; 
+        } elseif($lang == "en") {
+           $response = "END Your phone number, ".$phonenumber." is not registered by Twaa Mtaro. Please contact your street leader for assistance."; 
+        }
   }
     header('Content-type: res/plain');
     return $response;

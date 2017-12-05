@@ -67,10 +67,11 @@ $app->post('/', function() use($app) {
                     $response = dSendInfoMenu($lang);
                 break;
                 case 3:
-                    $response = askForHelp($res,$user,$lang);
+                    $response = askForHelp($res, $user, $lang);
                 break;
                 case 4:
-                    $response = updateUserLang($phonenumber);
+                    $lang = updateUserLang($phonenumber);
+                    $response = dWelcomeMenu($userName, $lang);
                 break;
                 
                 default:

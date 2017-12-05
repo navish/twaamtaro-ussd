@@ -65,7 +65,11 @@ $app->post('/', function() use($app) {
                 break;
                 case 4:
                     $lang = updateUserLang($phonenumber);
-                    $response = dWelcomeMenu($userName, $lang);
+                    if ($lang == "sw") {
+                         $response = "END Umechagua Kiswahili\n";
+                     } elseif($lang == "en") {
+                         $response = "END You have chosen English\n";
+                     }
                 break;
                 
                 default:

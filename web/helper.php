@@ -494,8 +494,10 @@
                 "INSERT INTO need_helps( help_needed, gid, user_id, need_help_category_id, 
                 created_at, updated_at) 
                 VALUES ( '$helpNeeded', $drainId , $user, $helpCategory, now(), now())");
+            $sqlHelpDrain = pg_query($dbcon, 
+                "UPDATE mitaro_dar SET need_help=true WHERE gid=$drainId";
 
-            if ($sqlHelp) {
+            if ($sqlHelp && $$sqlHelpDrain) {
                 if ($lang == "sw") {
                     return "END Umefanikiwa kuomba msaada kwa ajili ya mtaro namba ".$drainId;
                 } elseif ($lang == "en") {

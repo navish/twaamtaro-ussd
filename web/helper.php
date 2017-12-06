@@ -497,7 +497,7 @@
             $sqlHelpDrain = pg_query($dbcon, 
                 "UPDATE mitaro_dar SET need_help=true WHERE gid=$drainId");
 
-            if ($sqlHelp && $$sqlHelpDrain) {
+            if ($sqlHelp && $sqlHelpDrain) {
                 if ($lang == "sw") {
                     return "END Umefanikiwa kuomba msaada kwa ajili ya mtaro namba ".$drainId;
                 } elseif ($lang == "en") {

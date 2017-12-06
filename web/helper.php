@@ -38,7 +38,7 @@
     }
 
     //Display a list of all districts
-    function dDistrictsMenu() 
+    function dDistrictsMenu($lang) 
     {
         $districtsList = "
         1. Kinondoni
@@ -46,14 +46,21 @@
         3. Temeke        
         4. Ubungo
         5. Kigamboni";
-
-        $districtsmenu =" CON OMBA MSAADA
+        
+        if ($lang == "sw") {
+            $districtsmenu =" CON OMBA MSAADA
         Chagua Wilaya ".$districtsList;
+        } elseif ($lang == "en") {
+            $districtsmenu =" CON Ask for help
+        Choose district ".$districtsList;
+        }
+
+
         return $districtsmenu;
     }
 
     //Display a list of all streets
-    function dStreetsMenu() 
+    function dStreetsMenu($lang) 
     {
         $dbcon = db();
         $streetsList  = '';
@@ -70,16 +77,26 @@
             
             $streetNo++;         
             } 
-            $streetsMenu = "CON Chagua mtaa ".$streetsList;      
+           
+            if ($lang == "sw") {
+             $streetsMenu = "CON Chagua mtaa ".$streetsList; 
+            } elseif ($lang == "en") {
+             $streetsMenu = "CON Choose street ".$streetsList; 
+            }
+     
         }
         else {
-            $streetsMenu = "END Hakuna mitaa kwenye kata hii";
+            if ($lang == "sw") {
+             $streetsMenu = "END Hakuna mitaa kwenye kata hii.";
+            } elseif ($lang == "en") {
+             $streetsMenu = "There are no drains in this ward."; 
+            }
         } 
         return $streetsMenu;
     }
 
     //Display a list of all wards
-    function dWardsMenu() {
+    function dWardsMenu($lang) {
         $wardsList = "
         1. Hananasifu
         2. Kigogo
@@ -91,7 +108,12 @@
         7. Ndugumbi
         8. Tandale ";
 
-        $wardsmenu =" CON Chagua Kata ".$wardsList;
+        
+        if ($lang == "sw") {
+             $wardsmenu =" CON Chagua Kata ".$wardsList;
+            } elseif ($lang == "en") {
+             $wardsmenu =" CON Choose Ward ".$wardsList; 
+            }
         return $wardsmenu;
     }
 
@@ -174,7 +196,7 @@
     //------------------------ END LANGUAGE FUNCTIONS -----------------------------//
     //-----------------------------------------------------------------------------//
 
-    function getUser($id,$lang)
+    function getUser($id, $lang)
     {
         $dbcon = db();
         $sqlCitizen = pg_query($dbcon,"SELECT * FROM users WHERE id=$id");
@@ -187,14 +209,12 @@
                 $citizen = "Hakuna mwananchi mwenye id hii";
             } elseif ($lang == "en") {
                $citizen = "There is no citizen with such ID";
-            }
-            
-            
+            }            
         } 
         return $citizen;
     }
 
-    function sendInfo($info,$userId,$lamg) {
+    function sendInfo($info, $userId, $lang) {
         $dbcon = db(); 
         switch ($info) {
             //Citizen has cleaned their drain
@@ -206,19 +226,19 @@
                     if ($sendClean) 
                     {
                         if ($lang=="sw") {
-                            return "END Umefanikiwa kutuma taarifa";
+                            return "END Umefanikiwa kutuma taarifa.";
                         } elseif($lang=="en") {
-                            return "END You have sent the information";
+                            return "END You have sent the information.";
                         }
                         
                     } 
                     else 
                     {
                         if ($lang=="sw") {
-                            return "END Haujafanikiwa kutuma taarifa";
+                            return "END Haujafanikiwa kutuma taarifa.";
                         } 
                         elseif($lang=="en") {
-                            return "END Information sending failed";
+                            return "END Information sending failed.";
                         }
                         
                     }
@@ -228,7 +248,7 @@
                         if ($lang=="sw") {
                             return "END Taarifa yako haijatumwa. Hauna mtaro wowote.";
                         } elseif ($lang=="en") {
-                            return "END Information was not sent. You don't have any drain";
+                            return "END Information was not sent. You don't have any drain.";
                         }   
                     }
             break;
@@ -254,7 +274,7 @@
         } // End Switch 
     } //End sendInfo()
 
-    function getDrainStatus($userId)
+    function getDrainStatus($userId, $lang)
     {
         $dbcon = db();
         $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
@@ -300,7 +320,7 @@
         return "END ".$drainstatus;
     } //End Get Drain Status
 
-    function getCollaborators($userId)
+    function getCollaborators($userId, $lang)
     {   
         $dbcon = db();
         //Check if the user has any claimed drains
@@ -348,7 +368,7 @@
 
 
     //Get Drains from a specific street
-    function getStreetDrains($streetId)
+    function getStreetDrains($streetId, $lang)
     {
         $dbcon = db();
         $drains = "";
@@ -428,13 +448,13 @@
 
         if(count($helpDetails) == 1) {
             //Enter District
-            $helpText .= dDistrictsMenu();
+            $helpText .= dDistrictsMenu($lang);
             return $helpText;
         }
         else if(count($helpDetails) == 2) {
             //Enter Ward
             if ($helpDetails[1] == 1) { //Temporary Constraint
-                $helpText .= dWardsMenu();
+                $helpText .= dWardsMenu($lang);
             } else {
 
                 if ($lang == "sw") {
@@ -448,7 +468,7 @@
         else if(count($helpDetails) == 3) {
             //Enter Street
             if ($helpDetails[2] == 1) { //Temporary Constraint
-                $helpText .= dStreetsMenu();
+                $helpText .= dStreetsMenu($lang);
             } else {
                 if ($lang == "sw") {
                     $helpText .= "END Huduma hii haijafika kwenye kata hii";
@@ -464,9 +484,9 @@
             //$helpText .= "CON OMBA MSAADA  Ingiza namba ya mtaro";
             
             if ($lang == "sw") {
-                $helpText .= "CON OMBA MSAADA Chagua mtaro ".getStreetDrains($helpDetails[3]) ;
+                $helpText .= "CON OMBA MSAADA Chagua mtaro ".getStreetDrains($helpDetails[3], $lang) ;
             } elseif($lang == "en") {
-                $helpText .= "CON ASK FOR HELP. Pick a drain ".getStreetDrains($helpDetails[3]) ;
+                $helpText .= "CON ASK FOR HELP. Pick a drain ".getStreetDrains($helpDetails[3], $lang) ;
             }
             
             return $helpText;
@@ -477,7 +497,11 @@
             return $helpText;
         }
         else if(count($helpDetails) == 6){
-            $helpText .="CON Ongeza maelezo ";
+             if ($lang == "sw") {
+                $helpText .= "CON Ongeza maelezo ".getStreetDrains($helpDetails[3], $lang) ;
+            } elseif($lang == "en") {
+                $helpText .= "CON Add description".getStreetDrains($helpDetails[3], $lang) ;
+            }
             return $helpText;
         }
         else if(count($helpDetails) == 7) {
@@ -505,9 +529,9 @@
                 }
             } else {
                 if ($lang == "sw") {
-                    return "END Kuna tatizo limetokea, maombi yako ya msaada hayajatumwa";
+                    return "END Kuna tatizo limetokea, maombi yako ya msaada hayajatumwa.";
                 } elseif ($lang == "en") {
-                    return "END Something went wrong, your request was not processed";
+                    return "END Something went wrong, your request was not processed.";
                 }
             }
         }

@@ -352,16 +352,15 @@
     {
         $dbcon = db();
         $drains = "";
-        $sqlDrains = pg_query($dbcon,"SELECT * FROM drains_streets WHERE street_id = $streetId");
+        $sqlDrains = pg_query($dbcon,"SELECT * FROM drains_streets WHERE street_id=$streetId");
         if (pg_num_rows($sqlDrains) > 0) {
             
             while ($drainRows = pg_fetch_assoc($sqlDrains)) {
                 $drain = $drainRows['drain_id'];
                 
-                $sqlDrainDetails = pg_query($dbcon,"SELECT * FROM mitaro_dar WHERE gid = $drain");
+                $sqlDrainDetails = pg_query($dbcon,"SELECT * FROM mitaro_dar WHERE gid=$drain");
                
                 $drainName = pg_fetch_assoc($sqlDrainDetails);
-                echo $drainName['address'];
                 $drains .= "\n".$drainName['gid'].", ".$drainName['address'];
             }
         }

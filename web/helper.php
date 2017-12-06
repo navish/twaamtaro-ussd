@@ -127,9 +127,9 @@
     // Display Send Information Menu
     function dSendInfoMenu($lang) {
         if ($lang == "sw") {
-            $menu ="CON Chagua Huduma\n1. Nimefanya usafi\n2. Uchafu haujatolewa";
+            $menu ="CON Chagua Huduma\n1. Nimefanya usafi";
         } elseif ($lang == "en") {
-            $menu ="CON Choose a service\n1. I cleaned my drain \n2. Garbage was not collected";
+            $menu ="CON Choose a service\n1. I cleaned my drain";
         } 
         
         return $menu;
@@ -247,16 +247,6 @@
                             return "END Information was not sent. You don't have any drain.";
                         }   
                     }
-            break;
-
-            //Citizen reporting rubbish collection
-            case 2:
-                if ($lang=="sw") {
-                    return "END Huduma hii haipo kwa sasa.";
-                } elseif ($lang=="en") {
-                    return "END Service is not available for now.";
-                }
-                
             break;
             
             default:

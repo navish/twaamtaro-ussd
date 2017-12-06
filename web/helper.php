@@ -32,8 +32,6 @@
 
             $welcomemenu =" CON ".$user." Karibu Twaa Mtaro. \nChagua Huduma ".$menulist;
         }
-
-
         return $welcomemenu;
     }
 
@@ -54,8 +52,6 @@
             $districtsmenu =" CON Ask for help
         Choose district ".$districtsList;
         }
-
-
         return $districtsmenu;
     }
 
@@ -498,9 +494,9 @@
         }
         else if(count($helpDetails) == 6){
              if ($lang == "sw") {
-                $helpText .= "CON Ongeza maelezo ".getStreetDrains($helpDetails[3], $lang) ;
+                $helpText .= "CON Ongeza maelezo";
             } elseif($lang == "en") {
-                $helpText .= "CON Add description".getStreetDrains($helpDetails[3], $lang) ;
+                $helpText .= "CON Add description";
             }
             return $helpText;
         }

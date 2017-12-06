@@ -495,7 +495,7 @@
                 created_at, updated_at) 
                 VALUES ( '$helpNeeded', $drainId , $user, $helpCategory, now(), now())");
             $sqlHelpDrain = pg_query($dbcon, 
-                "UPDATE mitaro_dar SET need_help=true WHERE gid=$drainId";
+                "UPDATE mitaro_dar SET need_help=true WHERE gid=$drainId");
 
             if ($sqlHelp && $$sqlHelpDrain) {
                 if ($lang == "sw") {

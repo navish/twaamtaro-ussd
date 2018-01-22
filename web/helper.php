@@ -239,7 +239,7 @@
                 $sqlClaim = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId AND gid = $drain");
                 
                 if(pg_num_rows($sqlClaim) > 0) {
-                    $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId");
+                    $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId AND gid = $drain");
                     if ($sendClean) 
                     {
                         if ($lang=="sw") {

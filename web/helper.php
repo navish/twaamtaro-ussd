@@ -228,7 +228,12 @@
                 $drains = "Hamna mitaro yoyote ulitwaa";
             }
         }
-        return "CON ".$drains;
+        if ($lang =="sw") {
+            return "CON Changua mtaro \n".$drains;
+        } elseif($lang =="en") {
+            return "CON Pick a drain".$drains;
+        }
+        
     } //End sendInfoDrains()
 
     function sendInfo($info, $drain, $userId, $lang) {

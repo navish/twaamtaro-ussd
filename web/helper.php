@@ -210,12 +210,33 @@
         return $citizen;
     }
 
-    function sendInfo($info, $userId, $lang) {
+    function sendInfoDrains($userId, $lang) {
+        $dbcon = db();
+        $drains = "";
+        $sqlClaim = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
+              
+        if(pg_num_rows($sqlClaim) > 0) {
+            while($drainRow = pg_fetch_assoc($sqlClaim)){
+            $drains .= $drainRow['gid']."\n";
+            }
+        } 
+        else
+        {
+            if ($lang =="sw") {
+                $drains = "You have not adopted any drains";
+            } elseif($lang =="en") {
+                $drains = "Hamna mitaro yoyote ulitwaa";
+            }
+        }
+        return "END ".$drains;
+    } //End sendInfoDrains()
+
+    function sendInfo($info, $drain, $userId, $lang) {
         $dbcon = db(); 
         switch ($info) {
             //Citizen has cleaned their drain
             case 1:
-                $sqlClaim = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
+                $sqlClaim = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId AND gid = $drain");
                 
                 if(pg_num_rows($sqlClaim) > 0) {
                     $sendClean = pg_query($dbcon,"UPDATE drain_claims SET shoveled = true WHERE user_id=$userId");
@@ -260,38 +281,44 @@
         } // End Switch 
     } //End sendInfo()
 
+    function giveStatus($drain, $statusvalue, $lang){
+        if($statusvalue = true) {
+            if ($lang=="sw") {
+                $theStatus ="Mtaro ".$drain.", ni msafi";
+            } elseif ($lang=="en") {
+                $theStatus ="Drain no. ".$drain.", is clean";
+            }
+        }
+        elseif ($statusvalue = false)  {
+            if ($lang=="sw") {
+                $theStatus = "Mtaro ".$drain.", ni mchafu";
+            } elseif ($lang=="en") {
+                $theStatus ="Drain no. ".$drain.", is dirty";
+            }
+        }
+        elseif ($statusvalue === null)  {
+            if ($lang=="sw") {
+                $theStatus ="Hakuna taarifa yoyote inayohusu mtaro wako";
+            } elseif ($lang=="en") {
+                $theStatus ="There is no any information about your drain";
+            }
+        }//End Null status 
+        return $theStatus;
+
+    }
+
     function getDrainStatus($userId, $lang)
     {
         $dbcon = db();
         $sqlClaims = pg_query($dbcon,"SELECT * FROM drain_claims WHERE user_id=$userId");
-
+        $mtaro = "";
+        $drainstatus = "";
+    
             if(pg_num_rows($sqlClaims) > 0) {
                 while ($claimsInfo=pg_fetch_assoc($sqlClaims)) {
-                    $mtaro =$claimsInfo['gid'];
-
-                    $statusvalue =$claimsInfo['shoveled'];
-    
-                    if ($statusvalue = true) {
-                        if ($lang=="sw") {
-                            $drainstatus ="Mtaro ".$mtaro.", ni msafi";
-                        } elseif ($lang=="en") {
-                            $drainstatus ="Drain no. ".$mtaro.", is clean";
-                        }
-                    }
-                    elseif ($statusvalue = false)  {
-                        if ($lang=="sw") {
-                            $drainstatus = "Mtaro ".$mtaro.", ni mchafu";
-                        } elseif ($lang=="en") {
-                            $drainstatus ="Drain no. ".$mtaro.", is dirty";
-                        }
-                    }
-                    elseif ($statusvalue === null)  {
-                        if ($lang=="sw") {
-                            $drainstatus ="Hakuna taarifa yoyote inayohusu mtaro wako";
-                        } elseif ($lang=="en") {
-                            $drainstatus ="There is no any information about your drain";
-                        }
-                    }//End Null status 
+                    $mtaro = $claimsInfo['gid'];
+                    $status = $claimsInfo['shoveled'];
+                    $drainstatus .= giveStatus($mtaro,$status,$lang)."\n";
                 }  
             }   
             else

@@ -103,7 +103,10 @@ $app->post('/', function() use($app) {
             
         }
         else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && !isset($level[2])){
-            $response = sendInfo($level[1],$user,$lang);
+            $response = sendInfoDrains($user,$lang);
+        }
+        else if(isset($level[1]) && $level[1]!="" && $level[0]=="2" && isset($level[2])){
+            $response = sendInfo($level[1],$level[2],$user,$lang);
         }
         
         else if(isset($level[0]) && $level[0]!="" && $level[0]=="3"){

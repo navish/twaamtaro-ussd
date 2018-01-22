@@ -228,7 +228,7 @@
                 $drains = "Hamna mitaro yoyote ulitwaa";
             }
         }
-        return $drains;
+        return "CON ".$drains;
     } //End sendInfoDrains()
 
     function sendInfo($info, $drain, $userId, $lang) {

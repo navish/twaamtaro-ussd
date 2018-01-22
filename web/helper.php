@@ -231,7 +231,7 @@
         if ($lang =="sw") {
             return "CON Changua mtaro \n".$drains;
         } elseif($lang =="en") {
-            return "CON Pick a drain".$drains;
+            return "CON Pick a drain \n".$drains;
         }
         
     } //End sendInfoDrains()

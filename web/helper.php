@@ -502,9 +502,9 @@
             //$helpText .= "CON OMBA MSAADA  Ingiza namba ya mtaro";
             
             if ($lang == "sw") {
-                $helpText .= "CON OMBA MSAADA Chagua mtaro ".getStreetDrains($helpDetails[3], $lang) ;
+                $helpText .= "CON OMBA MSAADA \n Chagua mtaro: \n".getStreetDrains($helpDetails[3], $lang) ;
             } elseif($lang == "en") {
-                $helpText .= "CON ASK FOR HELP. Pick a drain ".getStreetDrains($helpDetails[3], $lang) ;
+                $helpText .= "CON ASK FOR HELP. \n Pick a drain: \n ".getStreetDrains($helpDetails[3], $lang) ;
             }
             
             return $helpText;

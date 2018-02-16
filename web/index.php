@@ -20,33 +20,31 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 // Our web handlers
 
 $app->post('/', function() use($app) {
-    require __DIR__.'/helper.php';
-    require __DIR__.'/dbcon.php';
+    require __DIR__.'/functions.php';
 
     $res         = $_POST["text"]; //User response 
     $phonenumber = $_POST["phoneNumber"]; //Assumed mobile number
     $serviceCode = $_POST["serviceCode"];
-
     //$sessionId=$_GET['sessionId']; //For any audits/checks
-    $dbcon = db(); 
+    
     if (isset($res)) {
-      if (strpos($phonenumber, '+') !== false) {
+
+        if (strpos($phonenumber, '+') !== false) {
           $phonenumber = str_replace('+','',$phonenumber);
-    }
+        }
 
-    $citizen = pg_query($dbcon, "SELECT * FROM users WHERE sms_number='$phonenumber'");
-    $lang = userLangAssign($phonenumber);
 
-    if (pg_num_rows($citizen) > 0) {
-        error_log("found citizen");
-        $user_row = pg_fetch_assoc($citizen);
-        $user = $user_row['id'];
-        $street = $user_row['street_id'];
-        $userName = $user_row['first_name'].' '.$user_row['last_name'];
-        //$role = $user_row['role']; 
+        //Get Citizen Details
+        $citizen = getUser($phonenumber);
+        $username = $userDetails->user->first_name." ". $userDetails->user->last_name;
+        $userId = $userDetails->user->id;
 
+        $lang = userLangAssign($phonenumber);
+    
+    //If user is registered
+    if ($citizen != NULL) {
         if ( $res == "" ) {
-            $response = dWelcomeMenu($userName, $lang); 
+            $response = dWelcomeMenu($username, $lang); 
         }
 
         $level = explode("*", $res);
@@ -61,7 +59,7 @@ $app->post('/', function() use($app) {
                     $response = dSendInfoMenu($lang);
                 break;
                 case 3:
-                    $response = askForHelp($res, $user, $lang);
+                    $response = askForHelp($res, $userId, $lang);
                 break;
                 case 4:
                     $lang = updateUserLang($phonenumber);
@@ -113,7 +111,7 @@ $app->post('/', function() use($app) {
             $response = askForHelp($res, $user,$lang);
             }//End Need Help
             
-           
+
         
     }//End If citizen is registered
 
@@ -123,7 +121,7 @@ $app->post('/', function() use($app) {
         } elseif($lang == "en") {
            $response = "END Your phone number, ".$phonenumber." is not registered by Twaa Mtaro. Please contact your street leader for assistance."; 
         }
-  }
+    }
     header('Content-type: res/plain');
     return $response;
 }//If USSD String is set
